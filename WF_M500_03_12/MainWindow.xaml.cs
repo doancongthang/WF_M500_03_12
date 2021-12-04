@@ -16,6 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.IO.Ports;
+using WF_M500_03_12.Services;
 
 namespace WF_M500_03_12
 {
@@ -24,6 +26,7 @@ namespace WF_M500_03_12
     /// </summary>
     public partial class MainWindow : Window
     {
+        public delegate void ThreadStart();
         public static readonly DependencyProperty AngleProperty1 = DependencyProperty.Register("Angle1", typeof(double), typeof(MainWindow), new PropertyMetadata(default(double))); public static readonly DependencyProperty AngleProperty2 = DependencyProperty.Register("Angle2", typeof(double), typeof(MainWindow), new PropertyMetadata(default(double)));
         public static readonly DependencyProperty AngleProperty3 = DependencyProperty.Register("Angle3", typeof(double), typeof(MainWindow), new PropertyMetadata(default(double))); public static readonly DependencyProperty AngleProperty4 = DependencyProperty.Register("Angle4", typeof(double), typeof(MainWindow), new PropertyMetadata(default(double)));
         public static readonly DependencyProperty AngleProperty5 = DependencyProperty.Register("Angle5", typeof(double), typeof(MainWindow), new PropertyMetadata(default(double))); public static readonly DependencyProperty AngleProperty6 = DependencyProperty.Register("Angle6", typeof(double), typeof(MainWindow), new PropertyMetadata(default(double)));
@@ -58,9 +61,9 @@ namespace WF_M500_03_12
 
         System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
         public int i = 270, i_new = 0, stt_ang = 0, stt_ang2 = 0, val_ang1;
-        //public Machine mc1 = new Machine();
-        //public Machine mc2 = new Machine();
-        //public Machine mc3 = new Machine();
+        public Machine mc1 = new Machine();
+        public Machine mc2 = new Machine();
+        public Machine mc3 = new Machine();
         public MainWindow()
         {
             InitializeComponent();
@@ -71,15 +74,16 @@ namespace WF_M500_03_12
             //SpinSpeed = TimeSpan.FromMilliseconds(200);
 
             dispatcherTimer.Start();
-            //ModbusServices mb = new ModbusServices(mc1, mc2, mc3);
-            //LogicServices logic = new LogicServices(mc1, mc2, mc3);
-            //mb.Connect();
+            ModbusServices mb = new ModbusServices(mc1, mc2, mc3);
+            LogicServices logic = new LogicServices(mc1, mc2, mc3);
+            mb.Connect();
             //mb.Subcribe();
-            //logic.Subcribe();
-            //mb.Subcribe();
+            logic.Subcribe();
+            mb.Subcribe();
 
             //mb.updatedata();
             //mb.blink();
+
             tempmc1 = 145;      //Value 0;  Max: 400
             tempmc2 = 145;      //Value 0;
             tempmc3 = 145;      //Value 0;
