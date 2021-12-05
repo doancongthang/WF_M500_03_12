@@ -98,17 +98,16 @@ namespace WF_M500_03_12
             press_mpa3 = 215;   //Value 0;
             press_mpa1 = 215;   //Value 0;  max 335
 
+            //Orionsystem.vl_oil_pressure_in_ptk_bearing = 0;
             //xRpm1 = 360 + 270;
         }
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             var random = new Random();
             int num = random.Next(0, 360);
-
             //Angle1 = Angle2 = Angle3 = Angle4 = Angle5 = Angle6 = Angle7 = Angle8 = Angle9 = Angle10 = Angle11 = num;
             //Angle1 = Angle2 = Angle3 = Angle4 = Angle7 = num;//mc1.vl_mainlineoilpressure;
-
-            xRpm1 = xRpm2 = xRpm3 = xxRpm1 = xxRpm2 = xxRpm3 = press_mpa1 = press_mpa2 = press_mpa3 = temp_oil_water_1 = temp_oil_water_2 = temp_oil_water_3 = tempmc1 = tempmc2 = tempmc3 = num;
+            //xRpm1 = xRpm2 = xRpm3 = xxRpm1 = xxRpm2 = xxRpm3 = press_mpa1 = press_mpa2 = press_mpa3 = temp_oil_water_1 = temp_oil_water_2 = temp_oil_water_3 = tempmc1 = tempmc2 = tempmc3 = num;
 
 
             //tempmc1 = mc1.vl_temperature_gas * 2.7 + 145;
@@ -116,66 +115,137 @@ namespace WF_M500_03_12
             //tempmc3 = mc3.vl_temperature_gas * 2.7 + 145;
 
 
-            //#region Toc do dong co <1000
-            //if (mc1.vl_speed_engine < 100)
-            //{
-            //    xRpm1 = mc1.vl_speed_engine * 3.6 + 270;
-            //    xxRpm1 = mc1.vl_speed_engine / 2.7 + 270;
-            //}
-            //if (mc1.vl_speed_engine == 99)
-            //{
-            //    xRpm1 = (mc1.vl_speed_engine + 1) * 3.6 + 270;
-            //    xxRpm1 = (mc1.vl_speed_engine + 1) / 2.7 + 270;
-            //}
+            #region Toc do dong co <1000
+            if (mc1.vl_speed_engine < 100)
+            {
+                xRpm1 = mc1.vl_speed_engine * 3.6 + 270;
+                xxRpm1 = mc1.vl_speed_engine / 2.7 + 270;
+            }
+            if (mc1.vl_speed_engine == 99)
+            {
+                xRpm1 = (mc1.vl_speed_engine + 1) * 3.6 + 270;
+                xxRpm1 = (mc1.vl_speed_engine + 1) / 2.7 + 270;
+            }
 
-            //if (mc2.vl_speed_engine < 100)
-            //{
-            //    xRpm2 = mc2.vl_speed_engine * 3.6 + 270;
-            //    xxRpm2 = mc2.vl_speed_engine / 2.7 + 270;
-            //}
-            //if (mc2.vl_speed_engine == 99)
-            //{
-            //    xRpm2 = (mc2.vl_speed_engine + 1) * 3.6 + 270;
-            //    xxRpm2 = (mc2.vl_speed_engine + 1) / 2.7 + 270;
-            //}
+            if (mc2.vl_speed_engine < 100)
+            {
+                xRpm2 = mc2.vl_speed_engine * 3.6 + 270;
+                xxRpm2 = mc2.vl_speed_engine / 2.7 + 270;
+            }
+            if (mc2.vl_speed_engine == 99)
+            {
+                xRpm2 = (mc2.vl_speed_engine + 1) * 3.6 + 270;
+                xxRpm2 = (mc2.vl_speed_engine + 1) / 2.7 + 270;
+            }
 
-            //if (mc3.vl_speed_engine < 100)
-            //{
-            //    xRpm3 = mc3.vl_speed_engine * 3.6 + 270;
-            //    xxRpm3 = (mc3.vl_speed_engine / 2.7) + 270;
-            //}
-            //if (mc3.vl_speed_engine == 99)
-            //{
-            //    xRpm3 = (mc3.vl_speed_engine + 1) * 3.6 + 270;
-            //    xxRpm3 = (mc3.vl_speed_engine + 1) / 2.7 + 270;
-            //}
-            //#endregion
+            if (mc3.vl_speed_engine < 100)
+            {
+                xRpm3 = mc3.vl_speed_engine * 3.6 + 270;
+                xxRpm3 = (mc3.vl_speed_engine / 2.7) + 270;
+            }
+            if (mc3.vl_speed_engine == 99)
+            {
+                xRpm3 = (mc3.vl_speed_engine + 1) * 3.6 + 270;
+                xxRpm3 = (mc3.vl_speed_engine + 1) / 2.7 + 270;
+            }
+            #endregion
 
-            //#region Toc do dong co > 1000
-            //if (mc1.vl_speed_engine > 101)
-            //{
-            //    xRpm1 = mc1.vl_speed_engine * 3.6 + 270;
-            //    xxRpm1 = (mc1.vl_speed_engine) / 2.7 + 270;
-            //}
-            //if (mc2.vl_speed_engine > 101)
-            //{
-            //    xRpm2 = mc2.vl_speed_engine * 3.6 + 270;
-            //    xxRpm2 = (mc2.vl_speed_engine) / 2.7 + 270;
-            //}
-            //if (mc3.vl_speed_engine > 101)
-            //{
-            //    xRpm3 = mc3.vl_speed_engine * 3.6 + 270;
-            //    xxRpm3 = (mc3.vl_speed_engine) / 2.7 + 270;
-            //}
-            //#endregion
+            #region Toc do dong co > 1000
+            if (mc1.vl_speed_engine > 101)
+            {
+                xRpm1 = mc1.vl_speed_engine * 3.6 + 270;
+                xxRpm1 = (mc1.vl_speed_engine) / 2.7 + 270;
+            }
+            if (mc2.vl_speed_engine > 101)
+            {
+                xRpm2 = mc2.vl_speed_engine * 3.6 + 270;
+                xxRpm2 = (mc2.vl_speed_engine) / 2.7 + 270;
+            }
+            if (mc3.vl_speed_engine > 101)
+            {
+                xRpm3 = mc3.vl_speed_engine * 3.6 + 270;
+                xxRpm3 = (mc3.vl_speed_engine) / 2.7 + 270;
+            }
+            #endregion
 
-            ////xxRpm1 = mc1.vl_speed_engine * 2.7 + 270;
-            ////xxRpm2 = mc2.vl_speed_engine * 2.7 + 270;
-            ////xxRpm3 = mc3.vl_speed_engine * 2.7 + 270;
+            //xxRpm1 = mc1.vl_speed_engine * 2.7 + 270;
+            //xxRpm2 = mc2.vl_speed_engine * 2.7 + 270;
+            //xxRpm3 = mc3.vl_speed_engine * 2.7 + 270;
 
-            //press_mpa1 = 215 + mc1.vl_mainlineoilpressure * 8;
-            //press_mpa2 = 215 + mc2.vl_mainlineoilpressure * 8;
-            //press_mpa3 = 215 + mc3.vl_mainlineoilpressure * 8;
+            press_mpa1 = 215 + mc1.vl_oil_pressure_mainline * 8;
+            press_mpa2 = 215 + mc2.vl_oil_pressure_mainline * 8;
+            press_mpa3 = 215 + mc3.vl_oil_pressure_mainline * 8;
+
+            //Đồng hồ hiển thị áp suất và nhiệt độ input output nước và dầu
+            //Dầu mc1
+            if(mc1.sw_off_inout_water_oil == true)
+            {
+                temp_oil_water_1 = 215;
+            }    
+            if (mc1.sw_main_input_oil == true)
+            {
+                temp_oil_water_1 = 215 + mc1.vl_temperature_oil * 8;
+            }
+            if (mc1.sw_main_output_oil == true)
+            {
+                temp_oil_water_1 = 215 + mc1.vl_temperature_oil * 8 - 10;
+            }
+            //Nước mc1
+            if (mc1.sw_main_input_water == true)
+            {
+                temp_oil_water_1 = 215 + mc1.vl_temperature_water * 8;
+            }
+            if (mc1.sw_main_output_water == true)
+            {
+                temp_oil_water_1 = 215 + mc1.vl_temperature_water * 8 - 10;
+            }
+            //------------------------------------------------------------//
+            //Dầu mc2
+            if (mc2.sw_off_inout_water_oil == true)
+            {
+                temp_oil_water_2 = 215;
+            }
+            if (mc2.sw_main_input_oil == true)
+            {
+                temp_oil_water_2 = 215 + mc2.vl_temperature_oil * 8;
+            }
+            if (mc2.sw_main_output_oil == true)
+            {
+                temp_oil_water_2 = 215 + mc2.vl_temperature_oil * 8 - 10;
+            }
+            //Nước mc2
+            if (mc2.sw_main_input_water == true)
+            {
+                temp_oil_water_2 = 215 + mc2.vl_temperature_water * 8;
+            }
+            if (mc2.sw_main_output_water == true)
+            {
+                temp_oil_water_2 = 215 + mc2.vl_temperature_water * 8 - 10;
+            }
+            //------------------------------------------------------------//
+            //Dầu mc3
+            if (mc3.sw_off_inout_water_oil == true)
+            {
+                temp_oil_water_3 = 215;
+            }
+            if (mc3.sw_main_input_oil == true)
+            {
+                temp_oil_water_3 = 215 + mc3.vl_temperature_oil * 8;
+            }
+            if (mc3.sw_main_output_oil == true)
+            {
+                temp_oil_water_3 = 215 + mc3.vl_temperature_oil * 8 - 10;
+            }
+            //Nước mc3
+            if (mc3.sw_main_input_water == true)
+            {
+                temp_oil_water_3 = 215 + mc3.vl_temperature_water * 8;
+            }
+            if (mc3.sw_main_output_water == true)
+            {
+                temp_oil_water_3 = 215 + mc3.vl_temperature_water * 8 - 10;
+            }
+
         }
         public double Angle1
         {

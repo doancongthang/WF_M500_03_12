@@ -367,7 +367,8 @@ namespace WF_M500_03_12
             vl_reverse_air_pressure = 0;
             //vl_hydraulics = 0;
             vl_pressurefuel = 0;
-            vl_pressureptk = 0;
+            vl_pressureptk = 8;
+            vl_oil_pressure_in_ptk_bearing = 8;
             //vl_oilafterfilter = 0;
             //vl_oilbeforefilter = 0;
         }

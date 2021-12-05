@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Loaded="Form_OnLoaded"
-        mc:Ignorable="d" AllowsTransparency="True"  WindowStyle="None" ResizeMode="CanMinimize"  Background="{x:Null}" MouseDown="Window_MouseDown"
+        mc:Ignorable="d" AllowsTransparency="True"   WindowStyle="None" ResizeMode="CanMinimize"  Background="{x:Null}" MouseDown="Window_MouseDown"
         Height="1300" Width="1058" Closed="FormClosed">
     <!--MouseDown="Window_MouseDown"-->
     <Window.Resources>
     </Window.Resources>
-
+    <!--Height="1300" Width="1058""-->
     <Grid x:Name="gauge" Background="Black" HorizontalAlignment ="Center" VerticalAlignment ="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"  />

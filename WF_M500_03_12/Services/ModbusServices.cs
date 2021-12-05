@@ -161,8 +161,8 @@ namespace WF_M500_03_12.Services
                                 coilsToSend1[27] = mc1.sig_warning_tank;
                                 coilsToSend1[28] = mc2.sig_warning_tank;
                                 coilsToSend1[29] = mc3.sig_warning_tank;
-                                coilsToSend1[30] = mc3.sig_off_van_out_water;
-                                coilsToSend1[31] = mc2.sig_off_van_out_water;
+                                coilsToSend1[30] = mc3.sig_off_van_out_air;
+                                coilsToSend1[31] = mc2.sig_off_van_out_air;
                                 modbusClient.WriteMultipleCoils(0, coilsToSend1);
 
                                 //int[] gausdwin8inch = new int[6];
