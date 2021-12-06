@@ -32,7 +32,6 @@ namespace WF_M500_03_12.Services
             //modbusClient.ConnectedChanged += new EasyModbus.ModbusClient.ConnectedChangedHandler(UpdateConnectedChanged);
             //modbusClient.ReceiveDataChanged += new ModbusClient.ReceiveDataChangedHandler(updatedata);
             modbusClient.LogFileFilename = "logFiletxt.txt";
-
         }
         public void Subcribe()
         {
@@ -251,6 +250,10 @@ namespace WF_M500_03_12.Services
                                 #region Board_ID3
                                 modbusClient.UnitIdentifier = 3;
                                 bool[] result3 = modbusClient.ReadDiscreteInputs(0, 32);
+                                mc1.btn_on_VVD = result3[1];
+                                mc3.btn_off_MOA = result3[3];
+                                mc3.btn_off_MPA = result3[5];
+                                mc3.btn_on_VVD = result3[7];
                                 //**********************************************************************************************//
                                 bool[] coilsToSend3 = new bool[32];
                                 coilsToSend3[0] = mc3.sig_wn_high_P_water;

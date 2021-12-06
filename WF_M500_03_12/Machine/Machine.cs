@@ -26,7 +26,7 @@ namespace WF_M500_03_12
         public bool sig_starting_forbidden;
 
         //Gần chân vịt
-        public bool sig_oil_no_pump;
+        public bool sig_oil_no_pump;           // Hút dầu nhờn
 
         public bool sig_park;
         public bool sig_reverse;
@@ -34,32 +34,33 @@ namespace WF_M500_03_12
         public bool sig_highspeed;
         public bool sig_red_nopressuremachine;
 
-        public bool sig_on_van_out_air;
-        public bool sig_off_van_out_air;
+        public bool sig_on_van_out_air;         // Điều khiển mở khí xả
+        public bool sig_off_van_out_air;        // Điều khiển đóng khí xả
 
-        public bool sig_on_van_out_water;
-        public bool sig_off_van_out_water;
+        public bool sig_on_van_out_water;       // Điều khiển mở làm mát bằng nước thông qua van thông đáy
+        public bool sig_off_van_out_water;      // Điều khiển đóng làm mát bằng nước thông qua van thông đáy
 
-        public bool sig_overhigh_tank;
-        public bool sig_normal_tank;
-        public bool sig_low_tank;
-        public bool sig_empty_tank;
-        public bool sig_green_normal;
-        public bool sig_warning_tank;
-
+        //Báo mức két dầu nhờn
+        public bool sig_overhigh_tank;          // Cao
+        public bool sig_normal_tank;            // Trung bình
+        public bool sig_low_tank;               // Thấp
+        public bool sig_empty_tank;             // Quá thấp
+        public bool sig_green_normal;           // 
+        public bool sig_warning_tank;           // Đèn sự cố 
+            
         //Warning signal
-        public bool sig_red_high_P_master;
-        public bool sig_red_high_P_tank;
-        public bool sig_red_high_P_ptk;
+        public bool sig_red_high_P_master;      // Tụt áp suất dầu nhờn
+        public bool sig_red_high_P_tank;        // Áp lực cột nước tăng
+        public bool sig_red_high_P_ptk;         // Áp lực tuabin cao áp
         public bool sig_red_FE1;
         public bool sig_red_FE2;
         public bool sig_red_FE3;
-        public bool sig_wn_high_H_water;
-        public bool sig_wn_high_P_water;
-        public bool sig_wn_high_T_water;
-        public bool sig_wn_low_T_oil;
-        public bool sig_wn_high_P_fuel;
-        public bool sig_delta_P_oil;
+        public bool sig_wn_high_H_water;        // Cột nước trong két nước giảm
+        public bool sig_wn_high_P_water;        // Áp lực nước giảm
+        public bool sig_wn_high_T_water;        // Nhiệt độ nước
+        public bool sig_wn_low_T_oil;           // Nhiệt độ dầu nhờn tăng
+        public bool sig_wn_high_P_fuel;         // Áp lực nhiên liệu giảm
+        public bool sig_delta_P_oil;            // Chênh lệch áp lực trước và sau lọc khoảng 1.5kbar thì chấp nhận, quá thì phải vệ sinh
 
         //Value machine
         public double vl_speed_engine;
@@ -224,14 +225,18 @@ namespace WF_M500_03_12
             sig_wn_low_T_oil = false;
             sig_wn_high_P_fuel = false;
             sig_delta_P_oil = false;
-        }
 
+            vl_speed_engine = 0;
+            vl_temperature_engine = 0;
+            vl_oil_pressure_mainline = 0;
+            vl_temperature_oil = 0;
+            vl_temperature_water = 0;
+    }
         public void park()
         {
             sig_park = true;
             //mc3.sig_nopressure = true;
         }
-
         #endregion
     }
 
@@ -306,9 +311,9 @@ namespace WF_M500_03_12
         public static bool sig_main_VPU;
         public static bool sig_main_hobbyshirt;
 
-        public static bool sig_main_wn_PRB_oils;            //Cảnh báo dầu PRB     
-        public static bool sig_main_wn_cistrens;            //bể nước
-        public static bool sig_main_cystotrab_oil;          //Cảnh báo dầu thải
+        public static bool sig_main_wn_PRB_oils;            //Cảnh báo dầu PRB  trong két dự trữ   
+        public static bool sig_main_wn_cistrens;            //bể nước           trong két dự trữ
+        public static bool sig_main_cystotrab_oil;          //Cảnh báo dầu thải trong két dự trữ
 
 
         //Khu vực chân vịt

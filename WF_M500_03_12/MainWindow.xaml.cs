@@ -70,7 +70,7 @@ namespace WF_M500_03_12
             InitializeComponent();
             //Angle1 = Angle2 = Angle3 = Angle4 = Angle5 = Angle6 = Angle7 = Angle8 = Angle9 = Angle10 = Angle11 = 270;
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(100);
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(5);
             //SpinSpeed = TimeSpan.FromMilliseconds(200);
 
             dispatcherTimer.Start();
@@ -98,6 +98,10 @@ namespace WF_M500_03_12
             press_mpa3 = 215;   //Value 0;
             press_mpa1 = 215;   //Value 0;  max 335
 
+            temp_oil_water_2 = 320;
+            temp_oil_water_3 = 320;
+
+
             //Orionsystem.vl_oil_pressure_in_ptk_bearing = 0;
             //xRpm1 = 360 + 270;
         }
@@ -109,11 +113,9 @@ namespace WF_M500_03_12
             //Angle1 = Angle2 = Angle3 = Angle4 = Angle7 = num;//mc1.vl_mainlineoilpressure;
             //xRpm1 = xRpm2 = xRpm3 = xxRpm1 = xxRpm2 = xxRpm3 = press_mpa1 = press_mpa2 = press_mpa3 = temp_oil_water_1 = temp_oil_water_2 = temp_oil_water_3 = tempmc1 = tempmc2 = tempmc3 = num;
 
-
-            //tempmc1 = mc1.vl_temperature_gas * 2.7 + 145;
-            //tempmc2 = mc2.vl_temperature_gas * 2.7 + 145;
-            //tempmc3 = mc3.vl_temperature_gas * 2.7 + 145;
-
+            tempmc1 = mc1.vl_temperature_engine * 2.7 + 145;
+            tempmc2 = mc2.vl_temperature_engine * 2.7 + 145;
+            tempmc3 = mc3.vl_temperature_engine * 2.7 + 145;
 
             #region Toc do dong co <1000
             if (mc1.vl_speed_engine < 100)
@@ -168,10 +170,6 @@ namespace WF_M500_03_12
             }
             #endregion
 
-            //xxRpm1 = mc1.vl_speed_engine * 2.7 + 270;
-            //xxRpm2 = mc2.vl_speed_engine * 2.7 + 270;
-            //xxRpm3 = mc3.vl_speed_engine * 2.7 + 270;
-
             press_mpa1 = 215 + mc1.vl_oil_pressure_mainline * 8;
             press_mpa2 = 215 + mc2.vl_oil_pressure_mainline * 8;
             press_mpa3 = 215 + mc3.vl_oil_pressure_mainline * 8;
@@ -184,20 +182,20 @@ namespace WF_M500_03_12
             }    
             if (mc1.sw_main_input_oil == true)
             {
-                temp_oil_water_1 = 215 + mc1.vl_temperature_oil * 8;
+                temp_oil_water_1 = 215 + mc1.vl_temperature_oil * 1.05;
             }
             if (mc1.sw_main_output_oil == true)
             {
-                temp_oil_water_1 = 215 + mc1.vl_temperature_oil * 8 - 10;
+                temp_oil_water_1 = 215 + mc1.vl_temperature_oil * 1.05 - 10;
             }
             //Nước mc1
             if (mc1.sw_main_input_water == true)
             {
-                temp_oil_water_1 = 215 + mc1.vl_temperature_water * 8;
+                temp_oil_water_1 = 215 + mc1.vl_temperature_water * 1.05;
             }
             if (mc1.sw_main_output_water == true)
             {
-                temp_oil_water_1 = 215 + mc1.vl_temperature_water * 8 - 10;
+                temp_oil_water_1 = 215 + mc1.vl_temperature_water * 1.05 - 10;
             }
             //------------------------------------------------------------//
             //Dầu mc2
@@ -207,20 +205,20 @@ namespace WF_M500_03_12
             }
             if (mc2.sw_main_input_oil == true)
             {
-                temp_oil_water_2 = 215 + mc2.vl_temperature_oil * 8;
+                temp_oil_water_2 = 215 + mc2.vl_temperature_oil * 1.05;
             }
             if (mc2.sw_main_output_oil == true)
             {
-                temp_oil_water_2 = 215 + mc2.vl_temperature_oil * 8 - 10;
+                temp_oil_water_2 = 215 + mc2.vl_temperature_oil * 1.05 - 10;
             }
             //Nước mc2
             if (mc2.sw_main_input_water == true)
             {
-                temp_oil_water_2 = 215 + mc2.vl_temperature_water * 8;
+                temp_oil_water_2 = 215 + mc2.vl_temperature_water * 1.05;
             }
             if (mc2.sw_main_output_water == true)
             {
-                temp_oil_water_2 = 215 + mc2.vl_temperature_water * 8 - 10;
+                temp_oil_water_2 = 215 + mc2.vl_temperature_water * 1.05 - 10;
             }
             //------------------------------------------------------------//
             //Dầu mc3
@@ -230,22 +228,21 @@ namespace WF_M500_03_12
             }
             if (mc3.sw_main_input_oil == true)
             {
-                temp_oil_water_3 = 215 + mc3.vl_temperature_oil * 8;
+                temp_oil_water_3 = 215 + mc3.vl_temperature_oil * 1.05;
             }
             if (mc3.sw_main_output_oil == true)
             {
-                temp_oil_water_3 = 215 + mc3.vl_temperature_oil * 8 - 10;
+                temp_oil_water_3 = 215 + mc3.vl_temperature_oil * 1.05 - 10;
             }
             //Nước mc3
             if (mc3.sw_main_input_water == true)
             {
-                temp_oil_water_3 = 215 + mc3.vl_temperature_water * 8;
+                temp_oil_water_3 = 215 + mc3.vl_temperature_water * 1.05;
             }
             if (mc3.sw_main_output_water == true)
             {
-                temp_oil_water_3 = 215 + mc3.vl_temperature_water * 8 - 10;
+                temp_oil_water_3 = 215 + mc3.vl_temperature_water * 1.05 - 10;
             }
-
         }
         public double Angle1
         {
