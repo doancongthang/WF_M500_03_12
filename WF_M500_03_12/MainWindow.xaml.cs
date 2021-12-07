@@ -65,13 +65,12 @@ namespace WF_M500_03_12
         public MainWindow()
         {
             InitializeComponent();
-            InitializeComponent();
             //Angle1 = Angle2 = Angle3 = Angle4 = Angle5 = Angle6 = Angle7 = Angle8 = Angle9 = Angle10 = Angle11 = 270;
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(5);
+            //dispatcherTimer.Tick += new EventHandler(event_update);
+            //dispatcherTimer.Interval = TimeSpan.FromMilliseconds(5000);
             //SpinSpeed = TimeSpan.FromMilliseconds(200);
 
-            dispatcherTimer.Start();
+            //dispatcherTimer.Start();
             ModbusServices mb = new ModbusServices(mc1, mc2, mc3);
             LogicServices logic = new LogicServices(mc1, mc2, mc3);
             mb.Connect();
@@ -99,7 +98,7 @@ namespace WF_M500_03_12
             //Orionsystem.vl_oil_pressure_in_ptk_bearing = 0;
             //xRpm1 = 360 + 270;
         }
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        private void event_update(object sender, EventArgs e)
         {
             var random = new Random();
             int num = random.Next(0, 360);
@@ -238,6 +237,7 @@ namespace WF_M500_03_12
                 temp_oil_water_3 = 215 + mc3.vl_temperature_water * 1.05 - 10;
             }
         }
+        
         // Giá trị Angle không dùng
         //public double Angle1
         //{
@@ -287,6 +287,7 @@ namespace WF_M500_03_12
         //    set { SetValue(AngleProperty9, value); }
         //}
 
+        #region Define Angle
         public double tempmc1
         {
             get { return (double)GetValue(AngleProperty12); }
@@ -378,7 +379,7 @@ namespace WF_M500_03_12
             get { return (double)GetValue(AngleProperty_temp_oil_water_3); }
             set { SetValue(AngleProperty_temp_oil_water_3, value); }
         }
-
+        #endregion
         private void FormClosed(object sender, EventArgs e)
         {
             try
@@ -396,8 +397,8 @@ namespace WF_M500_03_12
         }
         private void Form_OnLoaded(object sender, RoutedEventArgs e)
         {
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(50);
+            dispatcherTimer.Tick += new EventHandler(event_update);
+            //dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1);
             dispatcherTimer.Start();
         }
     }

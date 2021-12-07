@@ -703,10 +703,14 @@ namespace WF_M500_03_12.Services
                                 mc1.sig_up = false;
                                 mc1.sig_highspeed = true;
                             }
-
                             if (coundown_speed_engine == 0)
                             {
                                 stateMc1 = STMC.MACHINEUP;
+                            }
+                            if (mc1.btn_up == true)
+                            {
+                                //mc1.vl_speed_engine = mc1.vl_speed_engine + ((Params.COUNT_STEP_ENGINE - coundown_speed_engine) / 10);
+                                stateMc1 = STMC.PROCESS_MACHINE_UP;
                             }
                             break;
                         case STMC.MACHINEDOWN:

@@ -4,8 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Loaded="Form_OnLoaded"
-        mc:Ignorable="d" AllowsTransparency="True"   WindowStyle="None" ResizeMode="CanMinimize"  Background="{x:Null}" MouseDown="Window_MouseDown"
+        Loaded="Form_OnLoaded" 
+        mc:Ignorable="d"
+        AllowsTransparency="False"
+        WindowStyle="None"
+        ResizeMode="CanMinimize"
+        Background="{x:Null}"
+        WindowStartupLocation="CenterScreen"
+        MouseDown="Window_MouseDown"
         Height="1300" Width="1058" Closed="FormClosed">
     <!--MouseDown="Window_MouseDown" MouseDown="Window_MouseDown"-->
     <Window.Resources>
@@ -15,10 +21,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"  />
         </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Grid Height="302" Width="302" Grid.Row="0" Grid.Column="0" Margin="24,3,734,997" >
+
+        <Grid Height="302" Width="302" Grid.Row="0" Grid.Column="0" Margin="27,2,731,1004" >
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-1.png"/>
             </Grid.Background>
@@ -55,7 +63,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Grid.Row="0" Margin="384,0,374,1000">
+        <Grid Height="302" Width="302" Grid.Row="0" Margin="387,2,371,1004">
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-1.png"/>
             </Grid.Background>
@@ -92,7 +100,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Grid.Row="0"  Margin="742,4,16,996">
+        <Grid Height="302" Width="302" Grid.Row="0"  Margin="746,2,12,1004">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-1.png"/>
@@ -130,7 +138,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Grid.Column="0" Margin="26,376,732,624" >
+        <Grid Height="302" Width="302" Grid.Column="0" Margin="27,378,731,625" >
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-2.png"/>
@@ -155,7 +163,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Margin="386,376,372,624">
+        <Grid Height="302" Width="302" Margin="386,378,372,625">
 
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -184,7 +192,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Margin="744,376,14,624">
+        <Grid Height="302" Width="302" Margin="744,378,14,625">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-2.png"/>
@@ -209,7 +217,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="151" Width="152" Grid.Column="0" Margin="97,824,811,326" >
+        <Grid Height="151" Width="152" Grid.Column="0" Margin="102,833,806,321" >
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-4.png"/>
@@ -234,8 +242,7 @@
             </Ellipse>
         </Grid>
 
-
-        <Grid Height="151" Width="151" Margin="462,826,447,324">
+        <Grid Height="151" Width="151" Margin="463,833,446,321">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-4.png"/>
@@ -260,7 +267,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="151" Width="151" Margin="821,830,88,320">
+        <Grid Height="151" Width="151" Margin="825,833,84,321">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-4.png"/>
@@ -285,7 +292,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="227" Width="226" Grid.Column="0" Margin="62,1056,772,19" >
+        <Grid Height="227" Width="226" Grid.Column="0" Margin="62,1060,772,20" >
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-3.png"/>
@@ -310,7 +317,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="227" Width="227" Margin="426,1054,406,21">
+        <Grid Height="227" Width="227" Margin="426,1060,406,20">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-3.png"/>
@@ -335,7 +342,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="227" Width="227" Margin="786,1058,47,17">
+        <Grid Height="227" Width="227" Margin="788,1060,45,20">
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-3.png"/>
             </Grid.Background>
