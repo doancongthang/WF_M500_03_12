@@ -399,10 +399,12 @@ namespace WF_M500_03_12.Services
                 {
                     btn_only();
                     Console.WriteLine(stateMc1);
-                    #region SW State
                     switch (stateMc1)
                     {
+                        //Auto process
+                        #region AUTO
                         case STMC.IDLE:
+                            mc1.sig_park = true;
                             if (mc1.btn_auto_start == true)
                             {
                                 stateMc1 = STMC.PROCESS_AUTO_W;
@@ -436,15 +438,15 @@ namespace WF_M500_03_12.Services
                             mc1.sig_moa = true;
                             mc1.sig_mpa = true;
                             mc1.sig_vnd = true;
-                            if (coundown_preminary_pump  == 70)
+                            if (coundown_preminary_pump == 70)
                             {
                                 mc1.sig_rotate1 = true;
                             }
-                            if (coundown_preminary_pump  == 40)
+                            if (coundown_preminary_pump == 40)
                             {
                                 mc1.sig_rotate2 = true;
                             }
-                            if (coundown_preminary_pump  == 10)
+                            if (coundown_preminary_pump == 10)
                             {
                                 mc1.sig_rotate3 = true;
                             }
@@ -459,6 +461,16 @@ namespace WF_M500_03_12.Services
                             }
                             break;
                         case STMC.READY_HIGH_PRESURE:
+                            mc1.sig_vnd = false;
+                            mc1.sig_rotate1 = false;
+                            mc1.sig_rotate2 = false;
+                            mc1.sig_rotate3 = false;
+                            mc1.sig_or_oil = true;
+                            mc1.sig_vvd = true;
+                            mc1.vl_temperature_engine = ((Params.COUNT_TEMPERATURE_ENGINE - coundown_temp_engine));
+                            mc1.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine));
+                            mc1.vl_temperature_water = ((Params.COUNT_TEMP_WATER_ENGINE - coundown_temp_water));
+                            mc1.vl_temperature_oil = ((Params.COUNT_TEMP_OIL_ENGINE - coundown_temp_oil));
                             if (coundown_preminary_pump == 0)
                             {
                                 mc1.sig_vnd = false;
@@ -471,72 +483,108 @@ namespace WF_M500_03_12.Services
                                 stateMc1 = STMC.START_OK;
                             }
                             break;
-                        case STMC.START_OK:
-                            Console.WriteLine("Da khoi dong xong 1");
-                            //stateMachine = StateMachine.CONTROLSPEED;
-                            break;
-                        //***********************************************//
-                        //Các điều kiện chuyển Manual
+                        #endregion
+                        //Manual process
+                        #region MANUAL
                         case STMC.PROCESS_MANUAL:
+                            mc1.sig_mpa = false;
+                            mc1.sig_vnd = false;
+                            mc1.sig_vvd = false;
+                            mc1.sig_rotate1 = false;
+                            mc1.sig_rotate2 = false;
+                            mc1.sig_rotate3 = false;
                             if (mc1.btn_on_MOA == true)
                             {
-                                coundown_preminary_pump = Params.COUNT_MAX_LOWPRESSURE;  // 8s
-                                stateMc1 = STMC.PROCESS_MANUAL_START;
+                                mc1.sig_moa = true;
                             }
-                            if(mc1.btn_auto_start == true)
+                            if (mc1.btn_off_MOA == true)
+                            {
+                                mc1.sig_moa = false;
+                            }
+                            if (mc1.btn_auto_start == true)
                             {
                                 stateMc1 = STMC.PROCESS_AUTO_W;
                             }
+                            if (mc1.btn_on_MPA == true)
+                            {
+                                coundown_preminary_pump = Params.COUNT_MAX_LOWPRESSURE;  // 8s
+                                mc1.sig_mpa = true;
+                                stateMc1 = STMC.PROCESS_MANUAL_START;
+                            }
                             break;
                         case STMC.PROCESS_MANUAL_START:
+                            //mc1.vl_oil_pressure_mainline = ((Params.COUNT_MAX_LOWPRESSURE - coundown_preminary_pump) * 0.1);
                             mc1.vl_oil_pressure_mainline = ((Params.COUNT_MAX_LOWPRESSURE - coundown_preminary_pump) * 0.1);
-                            if (mc1.btn_on_VND == true)
-                                stateMc1 = STMC.MANUAL_PRESSURE_PREMINARY_PUMP;
-                            break;
-                        case STMC.MANUAL_PRESSURE_PREMINARY_PUMP:
+                            if (mc1.btn_on_MOA == true)
+                            {
+                                mc1.sig_moa = true;
+                            }
+                            if (mc1.btn_off_MOA == true)
+                            {
+                                mc1.sig_moa = false;
+                            }
+                            if (mc1.btn_off_MPA == true)
+                            {
+                                mc1.sig_mpa = false;
+                            }
                             if (mc1.btn_on_VND == true)
                             {
-                                coundown_speed_engine = Params.COUNT_SPEED_ENGINE;      //Tang toc dong co
-                                coundown_temp_engine = Params.COUNT_TEMPERATURE_ENGINE; //Tăng nhiệt độ động cơ;
+                                mc1.sig_vnd = true;
+                                coundown_preminary_pump = Params.COUNT_MAX_LOWPRESSURE;  // 10s
+                                coundown_increte_pump = Params.COUNT_MAX_PREMINARY;
+                                stateMc1 = STMC.MANUAL_PRESSURE_PREMINARY_PUMP;
+                            }
+                            break;
+                        case STMC.MANUAL_PRESSURE_PREMINARY_PUMP:
+                            ///coundown_preminary_pump = Params.COUNT_MAX_LOWPRESSURE;  // 8s
+                            if (coundown_preminary_pump == 70)
+                            {
+                                mc1.sig_rotate1 = true;
+                            }
+                            if (coundown_preminary_pump == 40)
+                            {
+                                mc1.sig_rotate2 = true;
+                            }
+                            if (coundown_preminary_pump == 10)
+                            {
+                                mc1.sig_rotate3 = true;
+                            }
+                            if (mc1.btn_on_VVD == true)
+                            {
+                                stateMc1 = STMC.READY_HIGH_PRESURE;
+                                coundown_preminary_pump = Params.COUNT_MAX_PREMINARY;  //1s
+                                coundown_speed_engine = Params.COUNT_SPEED_ENGINE;      //Chuẩn bị khởi động
+                                coundown_temp_engine = Params.COUNT_TEMPERATURE_ENGINE; //Chuẩn bị tăng nhiệt độ
+                                coundown_temp_oil = Params.COUNT_TEMP_OIL_ENGINE;       //
+                                coundown_temp_water = Params.COUNT_TEMP_WATER_ENGINE;   //
                                 stateMc1 = STMC.MANUAL_READY_HIGH_PRESURE;
                             }
                             break;
                         case STMC.MANUAL_READY_HIGH_PRESURE:
-                            if (coundown_speed_engine == 0)  // 
-                            {
-                                stateMc1 = STMC.START_OK;
-                            }
-                            //Khởi động xong thì qua điều khiển tốc độ
-                            break;
-                    }
-                    #endregion
-                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    #region Action State
-                    switch (stateMc1)
-                    {
-                        case STMC.IDLE:
-                            mc1.sig_park = true;
-                            break;
-
-                        case STMC.PROCESS_AUTO_W:
-                            break;
-                        case STMC.PROCESS_AUTO_START:
-                            break;
-                        case STMC.PRESSURE_PREMINARY_PUMP:
-
-                            break;
-                        case STMC.READY_HIGH_PRESURE:
+                            mc1.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine));
+                            mc1.vl_temperature_engine = ((Params.COUNT_TEMPERATURE_ENGINE - coundown_temp_engine));
+                            mc1.vl_temperature_water = ((Params.COUNT_TEMP_WATER_ENGINE - coundown_temp_water));
+                            mc1.vl_temperature_oil = ((Params.COUNT_TEMP_OIL_ENGINE - coundown_temp_oil));
+                            mc1.sig_mpa = true;
+                            mc1.sig_vvd = true;
+                            mc1.sig_or_oil = true;
                             mc1.sig_vnd = false;
                             mc1.sig_rotate1 = false;
                             mc1.sig_rotate2 = false;
                             mc1.sig_rotate3 = false;
-                            mc1.sig_or_oil = true;
-                            mc1.sig_vvd = true;
-                            mc1.vl_temperature_engine = ((Params.COUNT_TEMPERATURE_ENGINE - coundown_temp_engine));
-                            mc1.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine));
-                            mc1.vl_temperature_water = ((Params.COUNT_TEMP_WATER_ENGINE - coundown_temp_water));
-                            mc1.vl_temperature_oil = ((Params.COUNT_TEMP_OIL_ENGINE - coundown_temp_oil));
+                            if (coundown_preminary_pump == 0)
+                            {
+                                mc1.sig_vnd = false;
+                                mc1.sig_rotate1 = false;
+                                mc1.sig_rotate2 = false;
+                                mc1.sig_rotate3 = false;
+                            }
+                            if (coundown_speed_engine == 0)
+                            {
+                                stateMc1 = STMC.START_OK;
+                            }
                             break;
+                        #endregion
                         case STMC.START_OK:
                             mc1.sig_moa = false;
                             mc1.sig_mpa = false;
@@ -546,72 +594,19 @@ namespace WF_M500_03_12.Services
                             mc1.sig_rotate2 = false;
                             mc1.sig_rotate3 = false;
                             mc1.sig_or_oil = false;
-                            break;
-                        case STMC.PROCESS_MANUAL:
-                            mc1.sig_mpa = false;
-                            mc1.sig_vnd = false;
-                            mc1.sig_vvd = false;
-                            mc1.sig_rotate1 = false;
-                            mc1.sig_rotate2 = false;
-                            mc1.sig_rotate3 = false;
-                            break;
-                        case STMC.PROCESS_MANUAL_START:
-                            if (mc1.btn_on_MOA == true)
-                            {
-                                mc1.sig_moa = true;
-                            }
-                            if (mc1.btn_on_MPA == true)
-                            {
-                                mc1.sig_mpa = true;
-                            }
-
-                            if (mc1.btn_off_MOA == true)                //Nút nhấn bị lỗi chưa fix. Đang dùng nút off của máy 2.
-                                mc1.sig_mpa = false;
-                            if (mc1.btn_off_MPA == true)
-                                mc1.sig_mpa = false;
-                            if (mc1.sig_vnd == true)
-                            {
-                                mc1.sig_vnd = true;
-
-                            }
-                            break;
-                        case STMC.MANUAL_PRESSURE_PREMINARY_PUMP:
-                            mc1.sig_vnd = true;
-                            coundown_preminary_pump = Params.COUNT_MAX_LOWPRESSURE;  // 8s
-                            if (coundown_preminary_pump % 5 == 0)
-                            {
-                                mc1.sig_rotate1 = !mc1.sig_rotate1;
-                            }
-                            if (coundown_preminary_pump % 5 == 0)
-                            {
-                                mc1.sig_rotate2 = !mc1.sig_rotate2;
-                            }
-                            if (coundown_preminary_pump % 5 == 0)
-                            {
-                                mc1.sig_rotate2 = !mc1.sig_rotate3;
-                            }
-                            break;
-                        case STMC.MANUAL_READY_HIGH_PRESURE:
-                            mc1.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine));
-                            mc1.vl_temperature_engine = ((Params.COUNT_TEMPERATURE_ENGINE - coundown_temp_engine));
-                            mc1.sig_mpa = true;
-                            mc1.sig_vvd = true;
-                            mc1.sig_or_oil = true;
-                            mc1.sig_vnd = false;
-                            mc1.sig_rotate1 = false;
-                            mc1.sig_rotate2 = false;
-                            mc1.sig_rotate3 = false;
+                            Console.WriteLine("Da khoi dong xong 1");
                             break;
                     }
-                    #endregion
                 }
                 //if (stateMachine == StateMachine.CONTROLSPEED)
+                //--IF_START_OK_GO_TO_CONTROL_SPEED--//
                 {
                     btn_only();
                     Console.WriteLine(stateMc1);
                     switch (stateMc1)
                     {
                         case STMC.START_OK:
+                            #region START_OK
                             if (mc1.btn_estop == true)
                             {
                                 mc1.offmachine();
@@ -643,7 +638,9 @@ namespace WF_M500_03_12.Services
                             //    mc1.sig_park = true;
                             //}    
                             break;
+                        #endregion
                         case STMC.MACHINEUP:
+                            #region MACHINEUP
                             coundown_speed_engine = Params.COUNT_STEP_ENGINE;           //Tăng tốc dần
                             mc1.sig_park = false;
                             mc1.sig_reverse = false;
@@ -659,7 +656,6 @@ namespace WF_M500_03_12.Services
                                 mc1.sig_oil_no_pump = true;
                                 stateMc1 = STMC.IDLE;
                             }
-
                             if (mc1.btn_down == true)
                             {
                                 coundown_speed_engine = Params.COUNT_STEP_ENGINE;           //Giảm tốc dần
@@ -695,7 +691,9 @@ namespace WF_M500_03_12.Services
                                 stateMc1 = STMC.QUICKDOWN;
                             }
                             break;
+                        #endregion
                         case STMC.PROCESS_MACHINE_UP:
+                            #region PROCESS_MACHINE_UP
                             mc1.vl_speed_engine = mc1.vl_speed_engine + ((Params.COUNT_STEP_ENGINE - coundown_speed_engine) / 10);
                             mc1.sig_up = true;
                             if (mc1.vl_speed_engine > 100)
@@ -713,7 +711,9 @@ namespace WF_M500_03_12.Services
                                 stateMc1 = STMC.PROCESS_MACHINE_UP;
                             }
                             break;
+                        #endregion
                         case STMC.MACHINEDOWN:
+                            #region MACHINEDOWN
                             mc1.vl_speed_engine = mc1.vl_speed_engine - ((Params.COUNT_STEP_ENGINE - coundown_speed_engine) / 10);
                             //if (mc1.vl_speed_engine < 100)
                             //{
@@ -751,9 +751,10 @@ namespace WF_M500_03_12.Services
                             {
                                 stateMc1 = STMC.MACHINEDOWN;
                             }
-
                             break;
+                        #endregion
                         case STMC.REVERSE:
+                            #region REVERSE
                             mc1.vl_speed_engine = mc1.vl_speed_engine + ((Params.COUNT_SPEED_REVERS - coundown_speed_engine) / 10);
                             mc1.sig_reverse = true;
                             mc1.sig_park = false;
@@ -764,8 +765,9 @@ namespace WF_M500_03_12.Services
                             }
                             //stateMc1 = STMC.REVERSE;
                             break;
+                        #endregion
                         case STMC.STOP_POSITION:
-
+                            #region STOP_POSITION
                             mc1.vl_speed_engine = mc1.vl_speed_engine - ((Params.COUNT_SPEED_REVERS - coundown_speed_engine) / 10);
                             if (mc1.vl_speed_engine < 75)                    //Đang sai phần cứng. cần sửa lại nút nhấn Up1
                             {
@@ -778,7 +780,9 @@ namespace WF_M500_03_12.Services
                                 stateMc1 = STMC.START_OK;
                             }
                             break;
+                        #endregion
                         case STMC.QUICKDOWN:
+                            #region QUICKDOWN
                             mc1.vl_speed_engine = mc1.vl_speed_engine - ((Params.COUNT_QUICKDOWN - coundown_speed_engine) / 10);
                             if (mc1.vl_speed_engine <= 79)
                             {
@@ -788,10 +792,10 @@ namespace WF_M500_03_12.Services
                                 stateMc1 = STMC.START_OK;
                             }
                             break;
+                            #endregion
                     }
                 }
                 await Task.Delay(1);
-                //Console.WriteLine(stateMc1);
             }
         }
         public void btn_only()
@@ -803,7 +807,7 @@ namespace WF_M500_03_12.Services
             }
             {
                 #region TEST_LAMP
-                if(Orionsystem.btn_checklight == true)
+                if (Orionsystem.btn_checklight == true)
                 {
                     stateMachine = StateMachine.TEST;
                 }

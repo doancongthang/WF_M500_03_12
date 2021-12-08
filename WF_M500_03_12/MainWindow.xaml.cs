@@ -65,12 +65,6 @@ namespace WF_M500_03_12
         public MainWindow()
         {
             InitializeComponent();
-            //Angle1 = Angle2 = Angle3 = Angle4 = Angle5 = Angle6 = Angle7 = Angle8 = Angle9 = Angle10 = Angle11 = 270;
-            //dispatcherTimer.Tick += new EventHandler(event_update);
-            //dispatcherTimer.Interval = TimeSpan.FromMilliseconds(5000);
-            //SpinSpeed = TimeSpan.FromMilliseconds(200);
-
-            //dispatcherTimer.Start();
             ModbusServices mb = new ModbusServices(mc1, mc2, mc3);
             LogicServices logic = new LogicServices(mc1, mc2, mc3);
             mb.Connect();
@@ -89,22 +83,14 @@ namespace WF_M500_03_12
             xRpm2 = 270;        //Value 0;
             xRpm3 = 270;        //Value 0;
 
-            //xxRpm1 = 270  + 36;
-
             press_mpa2 = 215;   //Value 0;  max 320
             press_mpa3 = 215;   //Value 0;  max 320 
             press_mpa1 = 215;   //Value 0;  max 320
-
-            //Orionsystem.vl_oil_pressure_in_ptk_bearing = 0;
-            //xRpm1 = 360 + 270;
         }
         private void event_update(object sender, EventArgs e)
         {
             var random = new Random();
             int num = random.Next(0, 360);
-            //Angle1 = Angle2 = Angle3 = Angle4 = Angle5 = Angle6 = Angle7 = Angle8 = Angle9 = Angle10 = Angle11 = num;
-            //Angle1 = Angle2 = Angle3 = Angle4 = Angle7 = num;//mc1.vl_mainlineoilpressure;
-            //xRpm1 = xRpm2 = xRpm3 = xxRpm1 = xxRpm2 = xxRpm3 = press_mpa1 = press_mpa2 = press_mpa3 = temp_oil_water_1 = temp_oil_water_2 = temp_oil_water_3 = tempmc1 = tempmc2 = tempmc3 = num;
 
             tempmc1 = mc1.vl_temperature_engine * 2.7 + 145;
             tempmc2 = mc2.vl_temperature_engine * 2.7 + 145;
