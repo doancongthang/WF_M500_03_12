@@ -1648,10 +1648,10 @@ namespace WF_M500_03_12.Services
             }
             {
                 #region TEST_LAMP
-                if (Orionsystem.btn_checklight == true)
-                {
-                    stateMachine = StateMachine.TEST;
-                }
+                //if (Orionsystem.btn_checklight == true)
+                //{
+                //    stateMachine = StateMachine.TEST;
+                //}
                 #endregion
                 //***************************************//
                 #region btn for machine
