@@ -22,7 +22,7 @@ namespace WF_M500_03_12.Services
             mc2 = _mc2;
             mc3 = _mc3;
             modbusClient = new WF_M500_03_12.ModbusClient();
-            modbusClient.SerialPort = "COM8";
+            modbusClient.SerialPort = "COM12";
             modbusClient.Baudrate = 115200;
             modbusClient.Parity = System.IO.Ports.Parity.None;
             modbusClient.StopBits = System.IO.Ports.StopBits.One;
@@ -120,10 +120,10 @@ namespace WF_M500_03_12.Services
                                 mc2.btn_down = result[22];
                                 mc1.btn_down = result[23];
                                 mc3.btn_up = result[24];
-                                mc2.btn_up = result[25];
+                                //mc2.btn_up = result[25];
                                 mc1.btn_up = result[26];
                                 mc1.btn_estop = result[27];
-                                mc2.btn_estop = result[28];
+                                //mc2.btn_estop = result[28];
                                 mc3.btn_estop = result[29];
                                 //mc.                     = result[30];
                                 //mc.                     = result[31];
@@ -254,6 +254,9 @@ namespace WF_M500_03_12.Services
                                 mc3.btn_off_MOA = result3[3];
                                 mc3.btn_off_MPA = result3[5];
                                 mc3.btn_on_VVD = result3[7];
+                                mc2.btn_estop = result3[11];
+                                mc2.btn_up = result3[13];
+
                                 //**********************************************************************************************//
                                 bool[] coilsToSend3 = new bool[32];
                                 coilsToSend3[0] = mc3.sig_wn_high_P_water;

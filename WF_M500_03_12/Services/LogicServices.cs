@@ -42,7 +42,6 @@ namespace WF_M500_03_12.Services
         REVERSE,
         STOP_POSITION
     }
-
     class LogicServices
     {
         #region Declair
@@ -187,8 +186,8 @@ namespace WF_M500_03_12.Services
             Task control = Task.Run(() => loopUpdateActionsStateMachine());  // Khởi chạy loop services
                                                                              //  Task timer1s = Task.Run(() => Timer1Second());
             Task stateEachMachine1 = Task.Run(() => parallel1_updateMachine());
-            //Task stateEachMachine2 = Task.Run(() => parallel2_updateMachine());
-            //Task stateEachMachine3 = Task.Run(() => parallel3_updateMachine());
+            Task stateEachMachine2 = Task.Run(() => parallel2_updateMachine());
+            Task stateEachMachine3 = Task.Run(() => parallel3_updateMachine());
         }
         private async void loopUpdateActionsStateMachine()
         {
@@ -388,8 +387,6 @@ namespace WF_M500_03_12.Services
                 {
                     btn_only();
                     stateMc1 = STMC.IDLE;
-                    stateMc2 = STMC.IDLE;
-                    stateMc3 = STMC.IDLE;
                     mc1.offmachine();
                     mc2.offmachine();
                     mc3.offmachine();
@@ -522,6 +519,10 @@ namespace WF_M500_03_12.Services
                             if (mc1.btn_off_MOA == true)
                             {
                                 mc1.sig_moa = false;
+                            }
+                            if (mc1.btn_on_MPA == true)
+                            {
+                                mc1.sig_mpa = true;
                             }
                             if (mc1.btn_off_MPA == true)
                             {
@@ -790,6 +791,846 @@ namespace WF_M500_03_12.Services
                                 mc1.sig_highspeed = false;
                                 mc1.sig_up = false;
                                 stateMc1 = STMC.START_OK;
+                            }
+                            break;
+                            #endregion
+                    }
+                }
+                await Task.Delay(1);
+            }
+        }
+        private async void parallel2_updateMachine()
+        {
+            while (true)
+            {
+                if (stateMachine == StateMachine.MACHINE_OFF)
+                {
+                    btn_only();
+                    stateMc2 = STMC.IDLE;
+                    mc2.offmachine();
+                    mc2.offmachine();
+                    mc3.offmachine();
+                    Orionsystem.off_orion();
+                }
+                if (stateMachine == StateMachine.STARTMACHINE)
+                {
+                    btn_only();
+                    Console.WriteLine(stateMc2);
+                    switch (stateMc2)
+                    {
+                        //Auto process
+                        #region AUTO
+                        case STMC.IDLE:
+                            mc2.sig_park = true;
+                            if (mc2.btn_auto_start == true)
+                            {
+                                stateMc2 = STMC.PROCESS_AUTO_W;
+                            }
+                            if (mc2.btn_auto_start == false)
+                            {
+                                stateMc2 = STMC.PROCESS_MANUAL;
+                            }
+                            break;
+                        case STMC.PROCESS_AUTO_W:
+                            if (mc2.btn_auto_start == false)
+                            {
+                                coundown_preminary_pump2 = Params.COUNT_MAX_PREMINARY;  // 4s
+                                stateMc2 = STMC.PROCESS_AUTO_START;
+                            }
+                            break;
+                        case STMC.PROCESS_AUTO_START:
+                            mc2.vl_oil_pressure_mainline = ((Params.COUNT_MAX_PREMINARY - coundown_preminary_pump2) * 0.1);
+                            mc2.sig_mpa = true;
+                            mc2.sig_moa = true;
+                            if (coundown_preminary_pump2 == 0)
+                            {
+                                coundown_preminary_pump2 = Params.COUNT_MAX_LOWPRESSURE;  // 10s
+                                coundown_increte_pump2 = Params.COUNT_MAX_PREMINARY;
+                                stateMc2 = STMC.PRESSURE_PREMINARY_PUMP;
+                            }
+                            break;
+                        case STMC.PRESSURE_PREMINARY_PUMP:
+                            mc2.vl_oil_pressure_mainline = ((Params.COUNT_MAX_LOWPRESSURE - coundown_increte_pump2) * 0.1);
+                            mc2.sig_vnd = true;
+                            mc2.sig_moa = true;
+                            mc2.sig_mpa = true;
+                            mc2.sig_vnd = true;
+                            if (coundown_preminary_pump2 == 70)
+                            {
+                                mc2.sig_rotate1 = true;
+                            }
+                            if (coundown_preminary_pump2 == 40)
+                            {
+                                mc2.sig_rotate2 = true;
+                            }
+                            if (coundown_preminary_pump2 == 10)
+                            {
+                                mc2.sig_rotate3 = true;
+                            }
+                            if (coundown_preminary_pump2 == 0)
+                            {
+                                stateMc2 = STMC.READY_HIGH_PRESURE;
+                                coundown_preminary_pump2 = Params.COUNT_MAX_PREMINARY;  //1s
+                                coundown_speed_engine2 = Params.COUNT_SPEED_ENGINE;      //Chuẩn bị khởi động
+                                coundown_temp_engine2 = Params.COUNT_TEMPERATURE_ENGINE; //Chuẩn bị tăng nhiệt độ
+                                coundown_temp_oil2 = Params.COUNT_TEMP_OIL_ENGINE;       //
+                                coundown_temp_water2 = Params.COUNT_TEMP_WATER_ENGINE;   //
+                            }
+                            break;
+                        case STMC.READY_HIGH_PRESURE:
+                            mc2.sig_vnd = false;
+                            mc2.sig_rotate1 = false;
+                            mc2.sig_rotate2 = false;
+                            mc2.sig_rotate3 = false;
+                            mc2.sig_or_oil = true;
+                            mc2.sig_vvd = true;
+                            mc2.vl_temperature_engine = ((Params.COUNT_TEMPERATURE_ENGINE - coundown_temp_engine2));
+                            mc2.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine2));
+                            mc2.vl_temperature_water = ((Params.COUNT_TEMP_WATER_ENGINE - coundown_temp_water2));
+                            mc2.vl_temperature_oil = ((Params.COUNT_TEMP_OIL_ENGINE - coundown_temp_oil2));
+                            if (coundown_preminary_pump2 == 0)
+                            {
+                                mc2.sig_vnd = false;
+                                mc2.sig_rotate1 = false;
+                                mc2.sig_rotate2 = false;
+                                mc2.sig_rotate3 = false;
+                            }
+                            if (coundown_speed_engine2 == 0)
+                            {
+                                stateMc2 = STMC.START_OK;
+                            }
+                            break;
+                        #endregion
+                        //Manual process
+                        #region MANUAL
+                        case STMC.PROCESS_MANUAL:
+                            mc2.sig_mpa = false;
+                            mc2.sig_vnd = false;
+                            mc2.sig_vvd = false;
+                            mc2.sig_rotate1 = false;
+                            mc2.sig_rotate2 = false;
+                            mc2.sig_rotate3 = false;
+                            if (mc2.btn_on_MOA == true)
+                            {
+                                mc2.sig_moa = true;
+                            }
+                            if (mc2.btn_off_MOA == true)
+                            {
+                                mc2.sig_moa = false;
+                            }
+                            if (mc2.btn_auto_start == true)
+                            {
+                                stateMc2 = STMC.PROCESS_AUTO_W;
+                            }
+                            if (mc2.btn_on_MPA == true)
+                            {
+                                coundown_preminary_pump2 = Params.COUNT_MAX_LOWPRESSURE;  // 8s
+                                mc2.sig_mpa = true;
+                                stateMc2 = STMC.PROCESS_MANUAL_START;
+                            }
+                            break;
+                        case STMC.PROCESS_MANUAL_START:
+                            //mc2.vl_oil_pressure_mainline = ((Params.COUNT_MAX_LOWPRESSURE - coundown_preminary_pump2) * 0.1);
+                            mc2.vl_oil_pressure_mainline = ((Params.COUNT_MAX_LOWPRESSURE - coundown_preminary_pump2) * 0.1);
+                            if (mc2.btn_on_MOA == true)
+                            {
+                                mc2.sig_moa = true;
+                            }
+                            if (mc2.btn_off_MOA == true)
+                            {
+                                mc2.sig_moa = false;
+                            }
+                            if (mc2.btn_on_MPA == true)
+                            {
+                                mc2.sig_mpa = true;
+                            }
+                            if (mc2.btn_off_MPA == true)
+                            {
+                                mc2.sig_mpa = false;
+                            }
+                            if (mc2.btn_on_VND == true)
+                            {
+                                mc2.sig_vnd = true;
+                                coundown_preminary_pump2 = Params.COUNT_MAX_LOWPRESSURE;  // 10s
+                                coundown_increte_pump2 = Params.COUNT_MAX_PREMINARY;
+                                stateMc2 = STMC.MANUAL_PRESSURE_PREMINARY_PUMP;
+                            }
+                            break;
+                        case STMC.MANUAL_PRESSURE_PREMINARY_PUMP:
+                            ///coundown_preminary_pump2 = Params.COUNT_MAX_LOWPRESSURE;  // 8s
+                            if (coundown_preminary_pump2 == 70)
+                            {
+                                mc2.sig_rotate1 = true;
+                            }
+                            if (coundown_preminary_pump2 == 40)
+                            {
+                                mc2.sig_rotate2 = true;
+                            }
+                            if (coundown_preminary_pump2 == 10)
+                            {
+                                mc2.sig_rotate3 = true;
+                            }
+                            if (mc2.btn_on_VVD == true)
+                            {
+                                stateMc2 = STMC.READY_HIGH_PRESURE;
+                                coundown_preminary_pump2 = Params.COUNT_MAX_PREMINARY;  //1s
+                                coundown_speed_engine2 = Params.COUNT_SPEED_ENGINE;      //Chuẩn bị khởi động
+                                coundown_temp_engine2 = Params.COUNT_TEMPERATURE_ENGINE; //Chuẩn bị tăng nhiệt độ
+                                coundown_temp_oil2 = Params.COUNT_TEMP_OIL_ENGINE;       //
+                                coundown_temp_water2 = Params.COUNT_TEMP_WATER_ENGINE;   //
+                                stateMc2 = STMC.MANUAL_READY_HIGH_PRESURE;
+                            }
+                            break;
+                        case STMC.MANUAL_READY_HIGH_PRESURE:
+                            mc2.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine2));
+                            mc2.vl_temperature_engine = ((Params.COUNT_TEMPERATURE_ENGINE - coundown_temp_engine2));
+                            mc2.vl_temperature_water = ((Params.COUNT_TEMP_WATER_ENGINE - coundown_temp_water2));
+                            mc2.vl_temperature_oil = ((Params.COUNT_TEMP_OIL_ENGINE - coundown_temp_oil2));
+                            mc2.sig_mpa = true;
+                            mc2.sig_vvd = true;
+                            mc2.sig_or_oil = true;
+                            mc2.sig_vnd = false;
+                            mc2.sig_rotate1 = false;
+                            mc2.sig_rotate2 = false;
+                            mc2.sig_rotate3 = false;
+                            if (coundown_preminary_pump2 == 0)
+                            {
+                                mc2.sig_vnd = false;
+                                mc2.sig_rotate1 = false;
+                                mc2.sig_rotate2 = false;
+                                mc2.sig_rotate3 = false;
+                            }
+                            if (coundown_speed_engine2 == 0)
+                            {
+                                stateMc2 = STMC.START_OK;
+                            }
+                            break;
+                        #endregion
+                        case STMC.START_OK:
+                            mc2.sig_moa = false;
+                            mc2.sig_mpa = false;
+                            mc2.sig_vvd = false;
+                            mc2.sig_vnd = false;
+                            mc2.sig_rotate1 = false;
+                            mc2.sig_rotate2 = false;
+                            mc2.sig_rotate3 = false;
+                            mc2.sig_or_oil = false;
+                            Console.WriteLine("Da khoi dong xong 2");
+                            break;
+                    }
+                }
+                //if (stateMachine == StateMachine.CONTROLSPEED)
+                //--IF_START_OK_GO_TO_CONTROL_SPEED--//
+                {
+                    btn_only();
+                    Console.WriteLine(stateMc2);
+                    switch (stateMc2)
+                    {
+                        case STMC.START_OK:
+                            #region START_OK
+                            if (mc2.btn_estop == true)
+                            {
+                                mc2.offmachine();
+                                mc2.park();
+                                mc2.sig_oil_no_pump = true;
+                                stateMc2 = STMC.IDLE;
+                            }
+                            if (mc2.btn_up == true)
+                            {
+                                stateMc2 = STMC.MACHINEUP;
+                            }
+                            if (mc2.btn_down == true)
+                            {
+                                stateMc2 = STMC.MACHINEDOWN;
+                            }
+                            if (mc2.btn_down == true)
+                            {
+                                coundown_speed_engine2 = Params.COUNT_SPEED_REVERS;           //Giảm để lùi
+                                stateMc2 = STMC.REVERSE;
+                            }
+                            if (mc2.sig_reverse == true & mc2.btn_up == true)
+                            {
+                                coundown_speed_engine2 = Params.COUNT_SPEED_REVERS;           //Giảm để lùi
+                                stateMc2 = STMC.STOP_POSITION;
+                            }
+                            //if(mc2.vl_speed_engine <=75)
+                            //{
+                            //    mc2.sig_gobehind = false;
+                            //    mc2.sig_park = true;
+                            //}    
+                            break;
+                        #endregion
+                        case STMC.MACHINEUP:
+                            #region MACHINEUP
+                            coundown_speed_engine2 = Params.COUNT_STEP_ENGINE;           //Tăng tốc dần
+                            mc2.sig_park = false;
+                            mc2.sig_reverse = false;
+                            if (mc2.btn_up == true)
+                            {
+                                stateMc2 = STMC.PROCESS_MACHINE_UP;
+                            }
+                            //Nếu dừng
+                            if (mc2.btn_estop == true)
+                            {
+                                mc2.offmachine();
+                                mc2.park();
+                                mc2.sig_oil_no_pump = true;
+                                stateMc2 = STMC.IDLE;
+                            }
+                            if (mc2.btn_down == true)
+                            {
+                                coundown_speed_engine2 = Params.COUNT_STEP_ENGINE;           //Giảm tốc dần
+                                stateMc2 = STMC.MACHINEDOWN;
+                            }
+                            if (mc2.vl_speed_engine < 80)
+                            {
+                                mc2.sig_up = true;
+                                mc2.sig_highspeed = false;
+                                //mc2.sig_park = true;
+                                //mc2.vl_speed_engine = 75;
+                                //stateMc2 = STMC.START_OK;
+                            }
+                            if (mc2.vl_speed_engine < 75)
+                            {
+                                mc2.sig_up = false;
+                                mc2.sig_highspeed = false;
+                                mc2.sig_park = true;
+                                mc2.vl_speed_engine = 75;
+                                stateMc2 = STMC.START_OK;
+                            }
+                            if (mc2.btn_down == true)
+                            {
+                                mc2.sig_up = false;
+                                mc2.sig_highspeed = false;
+                                mc2.sig_park = false;
+                                //mc2.sig_gobehind = true;
+                            }
+                            if (mc2.btn_quickdown == true)
+                            {
+                                coundown_speed_engine2 = mc2.vl_speed_engine - 80;
+                                Params.COUNT_QUICKDOWN = mc2.vl_speed_engine - 80;
+                                stateMc2 = STMC.QUICKDOWN;
+                            }
+                            break;
+                        #endregion
+                        case STMC.PROCESS_MACHINE_UP:
+                            #region PROCESS_MACHINE_UP
+                            mc2.vl_speed_engine = mc2.vl_speed_engine + ((Params.COUNT_STEP_ENGINE - coundown_speed_engine2) / 10);
+                            mc2.sig_up = true;
+                            if (mc2.vl_speed_engine > 100)
+                            {
+                                mc2.sig_up = false;
+                                mc2.sig_highspeed = true;
+                            }
+                            if (coundown_speed_engine2 == 0)
+                            {
+                                stateMc2 = STMC.MACHINEUP;
+                            }
+                            if (mc2.btn_up == true)
+                            {
+                                //mc2.vl_speed_engine = mc2.vl_speed_engine + ((Params.COUNT_STEP_ENGINE - coundown_speed_engine2) / 10);
+                                stateMc2 = STMC.PROCESS_MACHINE_UP;
+                            }
+                            break;
+                        #endregion
+                        case STMC.MACHINEDOWN:
+                            #region MACHINEDOWN
+                            mc2.vl_speed_engine = mc2.vl_speed_engine - ((Params.COUNT_STEP_ENGINE - coundown_speed_engine2) / 10);
+                            //if (mc2.vl_speed_engine < 100)
+                            //{
+                            //    mc2.sig_goahead = true;
+                            //    mc2.sig_highspeed = false;
+                            //    stateMc2 = STMC.MACHINEUP;
+                            //}
+                            if (mc2.vl_speed_engine > 80)
+                            {
+                                mc2.sig_up = true;
+                                mc2.sig_park = false;
+                                mc2.sig_highspeed = false;
+                                stateMc2 = STMC.MACHINEUP;
+                                //stateMc2 = STMC.PROCESS_MACHINE_UP;
+                            }
+                            if (mc2.vl_speed_engine > 100)
+                            {
+                                mc2.sig_up = false;
+                                mc2.sig_highspeed = true;
+                                stateMc2 = STMC.PROCESS_MACHINE_UP;
+                            }
+                            if (mc2.vl_speed_engine < 80)
+                            {
+                                mc2.sig_up = false;
+                                mc2.sig_highspeed = false;
+                                mc2.sig_park = true;
+                                stateMc2 = STMC.MACHINEUP;
+                                //mc2.vl_speed_engine = 80;
+                            }
+                            if (mc2.btn_up == true)     //Đang dùng nút nhấn mc2
+                            {
+                                stateMc2 = STMC.MACHINEUP;
+                            }
+                            if (mc2.btn_down == true)
+                            {
+                                stateMc2 = STMC.MACHINEDOWN;
+                            }
+                            break;
+                        #endregion
+                        case STMC.REVERSE:
+                            #region REVERSE
+                            mc2.vl_speed_engine = mc2.vl_speed_engine + ((Params.COUNT_SPEED_REVERS - coundown_speed_engine2) / 10);
+                            mc2.sig_reverse = true;
+                            mc2.sig_park = false;
+                            if (mc2.vl_speed_engine >= 80)
+                            {
+                                mc2.sig_reverse = true;
+                                stateMc2 = STMC.START_OK;
+                            }
+                            //stateMc2 = STMC.REVERSE;
+                            break;
+                        #endregion
+                        case STMC.STOP_POSITION:
+                            #region STOP_POSITION
+                            mc2.vl_speed_engine = mc2.vl_speed_engine - ((Params.COUNT_SPEED_REVERS - coundown_speed_engine2) / 10);
+                            if (mc2.vl_speed_engine < 75)                    //Đang sai phần cứng. cần sửa lại nút nhấn Up1
+                            {
+                                //coundown_speed_engine2 = Params.COUNT_SPEED_REVERS;           //Giảm để lùi
+                                mc2.sig_park = true;
+                                mc2.sig_highspeed = false;
+                                mc2.sig_up = false;
+                                mc2.sig_reverse = false;
+                                mc2.vl_speed_engine = 75;
+                                stateMc2 = STMC.START_OK;
+                            }
+                            break;
+                        #endregion
+                        case STMC.QUICKDOWN:
+                            #region QUICKDOWN
+                            mc2.vl_speed_engine = mc2.vl_speed_engine - ((Params.COUNT_QUICKDOWN - coundown_speed_engine2) / 10);
+                            if (mc2.vl_speed_engine <= 79)
+                            {
+                                mc2.sig_park = true;
+                                mc2.sig_highspeed = false;
+                                mc2.sig_up = false;
+                                stateMc2 = STMC.START_OK;
+                            }
+                            break;
+                            #endregion
+                    }
+                }
+                await Task.Delay(1);
+            }
+        }
+        private async void parallel3_updateMachine()
+        {
+            while (true)
+            {
+                if (stateMachine == StateMachine.MACHINE_OFF)
+                {
+                    btn_only();
+                    stateMc3 = STMC.IDLE;
+                    mc3.offmachine();
+                    mc3.offmachine();
+                    mc3.offmachine();
+                    Orionsystem.off_orion();
+                }
+                if (stateMachine == StateMachine.STARTMACHINE)
+                {
+                    btn_only();
+                    Console.WriteLine(stateMc3);
+                    switch (stateMc3)
+                    {
+                        //Auto process
+                        #region AUTO
+                        case STMC.IDLE:
+                            mc3.sig_park = true;
+                            if (mc3.btn_auto_start == true)
+                            {
+                                stateMc3 = STMC.PROCESS_AUTO_W;
+                            }
+                            if (mc3.btn_auto_start == false)
+                            {
+                                stateMc3 = STMC.PROCESS_MANUAL;
+                            }
+                            break;
+                        case STMC.PROCESS_AUTO_W:
+                            if (mc3.btn_auto_start == false)
+                            {
+                                coundown_preminary_pump3 = Params.COUNT_MAX_PREMINARY;  // 4s
+                                stateMc3 = STMC.PROCESS_AUTO_START;
+                            }
+                            break;
+                        case STMC.PROCESS_AUTO_START:
+                            mc3.vl_oil_pressure_mainline = ((Params.COUNT_MAX_PREMINARY - coundown_preminary_pump3) * 0.1);
+                            mc3.sig_mpa = true;
+                            mc3.sig_moa = true;
+                            if (coundown_preminary_pump3 == 0)
+                            {
+                                coundown_preminary_pump3 = Params.COUNT_MAX_LOWPRESSURE;  // 10s
+                                coundown_increte_pump3 = Params.COUNT_MAX_PREMINARY;
+                                stateMc3 = STMC.PRESSURE_PREMINARY_PUMP;
+                            }
+                            break;
+                        case STMC.PRESSURE_PREMINARY_PUMP:
+                            mc3.vl_oil_pressure_mainline = ((Params.COUNT_MAX_LOWPRESSURE - coundown_increte_pump3) * 0.1);
+                            mc3.sig_vnd = true;
+                            mc3.sig_moa = true;
+                            mc3.sig_mpa = true;
+                            mc3.sig_vnd = true;
+                            if (coundown_preminary_pump3 == 70)
+                            {
+                                mc3.sig_rotate1 = true;
+                            }
+                            if (coundown_preminary_pump3 == 40)
+                            {
+                                mc3.sig_rotate2 = true;
+                            }
+                            if (coundown_preminary_pump3 == 10)
+                            {
+                                mc3.sig_rotate3 = true;
+                            }
+                            if (coundown_preminary_pump3 == 0)
+                            {
+                                stateMc3 = STMC.READY_HIGH_PRESURE;
+                                coundown_preminary_pump3 = Params.COUNT_MAX_PREMINARY;  //1s
+                                coundown_speed_engine3 = Params.COUNT_SPEED_ENGINE;      //Chuẩn bị khởi động
+                                coundown_temp_engine3 = Params.COUNT_TEMPERATURE_ENGINE; //Chuẩn bị tăng nhiệt độ
+                                coundown_temp_oil3 = Params.COUNT_TEMP_OIL_ENGINE;       //
+                                coundown_temp_water3 = Params.COUNT_TEMP_WATER_ENGINE;   //
+                            }
+                            break;
+                        case STMC.READY_HIGH_PRESURE:
+                            mc3.sig_vnd = false;
+                            mc3.sig_rotate1 = false;
+                            mc3.sig_rotate2 = false;
+                            mc3.sig_rotate3 = false;
+                            mc3.sig_or_oil = true;
+                            mc3.sig_vvd = true;
+                            mc3.vl_temperature_engine = ((Params.COUNT_TEMPERATURE_ENGINE - coundown_temp_engine3));
+                            mc3.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine3));
+                            mc3.vl_temperature_water = ((Params.COUNT_TEMP_WATER_ENGINE - coundown_temp_water3));
+                            mc3.vl_temperature_oil = ((Params.COUNT_TEMP_OIL_ENGINE - coundown_temp_oil3));
+                            if (coundown_preminary_pump3 == 0)
+                            {
+                                mc3.sig_vnd = false;
+                                mc3.sig_rotate1 = false;
+                                mc3.sig_rotate2 = false;
+                                mc3.sig_rotate3 = false;
+                            }
+                            if (coundown_speed_engine3 == 0)
+                            {
+                                stateMc3 = STMC.START_OK;
+                            }
+                            break;
+                        #endregion
+                        //Manual process
+                        #region MANUAL
+                        case STMC.PROCESS_MANUAL:
+                            mc3.sig_mpa = false;
+                            mc3.sig_vnd = false;
+                            mc3.sig_vvd = false;
+                            mc3.sig_rotate1 = false;
+                            mc3.sig_rotate2 = false;
+                            mc3.sig_rotate3 = false;
+                            if (mc3.btn_on_MOA == true)
+                            {
+                                mc3.sig_moa = true;
+                            }
+                            if (mc3.btn_off_MOA == true)
+                            {
+                                mc3.sig_moa = false;
+                            }
+                            if (mc3.btn_auto_start == true)
+                            {
+                                stateMc3 = STMC.PROCESS_AUTO_W;
+                            }
+                            if (mc3.btn_on_MPA == true)
+                            {
+                                coundown_preminary_pump3 = Params.COUNT_MAX_LOWPRESSURE;  // 8s
+                                mc3.sig_mpa = true;
+                                stateMc3 = STMC.PROCESS_MANUAL_START;
+                            }
+                            break;
+                        case STMC.PROCESS_MANUAL_START:
+                            //mc3.vl_oil_pressure_mainline = ((Params.COUNT_MAX_LOWPRESSURE - coundown_preminary_pump3) * 0.1);
+                            mc3.vl_oil_pressure_mainline = ((Params.COUNT_MAX_LOWPRESSURE - coundown_preminary_pump3) * 0.1);
+                            if (mc3.btn_on_MOA == true)
+                            {
+                                mc3.sig_moa = true;
+                            }
+                            if (mc3.btn_off_MOA == true)
+                            {
+                                mc3.sig_moa = false;
+                            }
+                            if (mc3.btn_on_MPA == true)
+                            {
+                                mc3.sig_mpa = true;
+                            }
+                            if (mc3.btn_off_MPA == true)
+                            {
+                                mc3.sig_mpa = false;
+                            }
+                            if (mc3.btn_on_VND == true)
+                            {
+                                mc3.sig_vnd = true;
+                                coundown_preminary_pump3 = Params.COUNT_MAX_LOWPRESSURE;  // 10s
+                                coundown_increte_pump3 = Params.COUNT_MAX_PREMINARY;
+                                stateMc3 = STMC.MANUAL_PRESSURE_PREMINARY_PUMP;
+                            }
+                            break;
+                        case STMC.MANUAL_PRESSURE_PREMINARY_PUMP:
+                            ///coundown_preminary_pump3 = Params.COUNT_MAX_LOWPRESSURE;  // 8s
+                            if (coundown_preminary_pump3 == 70)
+                            {
+                                mc3.sig_rotate1 = true;
+                            }
+                            if (coundown_preminary_pump3 == 40)
+                            {
+                                mc3.sig_rotate2 = true;
+                            }
+                            if (coundown_preminary_pump3 == 10)
+                            {
+                                mc3.sig_rotate3 = true;
+                            }
+                            if (mc3.btn_on_VVD == true)
+                            {
+                                stateMc3 = STMC.READY_HIGH_PRESURE;
+                                coundown_preminary_pump3 = Params.COUNT_MAX_PREMINARY;  //1s
+                                coundown_speed_engine3 = Params.COUNT_SPEED_ENGINE;      //Chuẩn bị khởi động
+                                coundown_temp_engine3 = Params.COUNT_TEMPERATURE_ENGINE; //Chuẩn bị tăng nhiệt độ
+                                coundown_temp_oil3 = Params.COUNT_TEMP_OIL_ENGINE;       //
+                                coundown_temp_water3 = Params.COUNT_TEMP_WATER_ENGINE;   //
+                                stateMc3 = STMC.MANUAL_READY_HIGH_PRESURE;
+                            }
+                            break;
+                        case STMC.MANUAL_READY_HIGH_PRESURE:
+                            mc3.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine3));
+                            mc3.vl_temperature_engine = ((Params.COUNT_TEMPERATURE_ENGINE - coundown_temp_engine3));
+                            mc3.vl_temperature_water = ((Params.COUNT_TEMP_WATER_ENGINE - coundown_temp_water3));
+                            mc3.vl_temperature_oil = ((Params.COUNT_TEMP_OIL_ENGINE - coundown_temp_oil3));
+                            mc3.sig_mpa = true;
+                            mc3.sig_vvd = true;
+                            mc3.sig_or_oil = true;
+                            mc3.sig_vnd = false;
+                            mc3.sig_rotate1 = false;
+                            mc3.sig_rotate2 = false;
+                            mc3.sig_rotate3 = false;
+                            if (coundown_preminary_pump3 == 0)
+                            {
+                                mc3.sig_vnd = false;
+                                mc3.sig_rotate1 = false;
+                                mc3.sig_rotate2 = false;
+                                mc3.sig_rotate3 = false;
+                            }
+                            if (coundown_speed_engine3 == 0)
+                            {
+                                stateMc3 = STMC.START_OK;
+                            }
+                            break;
+                        #endregion
+                        case STMC.START_OK:
+                            mc3.sig_moa = false;
+                            mc3.sig_mpa = false;
+                            mc3.sig_vvd = false;
+                            mc3.sig_vnd = false;
+                            mc3.sig_rotate1 = false;
+                            mc3.sig_rotate2 = false;
+                            mc3.sig_rotate3 = false;
+                            mc3.sig_or_oil = false;
+                            Console.WriteLine("Da khoi dong xong 1");
+                            break;
+                    }
+                }
+                //if (stateMachine == StateMachine.CONTROLSPEED)
+                //--IF_START_OK_GO_TO_CONTROL_SPEED--//
+                {
+                    btn_only();
+                    Console.WriteLine(stateMc3);
+                    switch (stateMc3)
+                    {
+                        case STMC.START_OK:
+                            #region START_OK
+                            if (mc3.btn_estop == true)
+                            {
+                                mc3.offmachine();
+                                mc3.park();
+                                mc3.sig_oil_no_pump = true;
+                                stateMc3 = STMC.IDLE;
+                            }
+                            if (mc3.btn_up == true)
+                            {
+                                stateMc3 = STMC.MACHINEUP;
+                            }
+                            if (mc3.btn_down == true)
+                            {
+                                stateMc3 = STMC.MACHINEDOWN;
+                            }
+                            if (mc3.btn_down == true)
+                            {
+                                coundown_speed_engine3 = Params.COUNT_SPEED_REVERS;           //Giảm để lùi
+                                stateMc3 = STMC.REVERSE;
+                            }
+                            if (mc3.sig_reverse == true & mc3.btn_up == true)
+                            {
+                                coundown_speed_engine3 = Params.COUNT_SPEED_REVERS;           //Giảm để lùi
+                                stateMc3 = STMC.STOP_POSITION;
+                            }
+                            //if(mc3.vl_speed_engine <=75)
+                            //{
+                            //    mc3.sig_gobehind = false;
+                            //    mc3.sig_park = true;
+                            //}    
+                            break;
+                        #endregion
+                        case STMC.MACHINEUP:
+                            #region MACHINEUP
+                            coundown_speed_engine3 = Params.COUNT_STEP_ENGINE;           //Tăng tốc dần
+                            mc3.sig_park = false;
+                            mc3.sig_reverse = false;
+                            if (mc3.btn_up == true)
+                            {
+                                stateMc3 = STMC.PROCESS_MACHINE_UP;
+                            }
+                            //Nếu dừng
+                            if (mc3.btn_estop == true)
+                            {
+                                mc3.offmachine();
+                                mc3.park();
+                                mc3.sig_oil_no_pump = true;
+                                stateMc3 = STMC.IDLE;
+                            }
+                            if (mc3.btn_down == true)
+                            {
+                                coundown_speed_engine3 = Params.COUNT_STEP_ENGINE;           //Giảm tốc dần
+                                stateMc3 = STMC.MACHINEDOWN;
+                            }
+                            if (mc3.vl_speed_engine < 80)
+                            {
+                                mc3.sig_up = true;
+                                mc3.sig_highspeed = false;
+                                //mc3.sig_park = true;
+                                //mc3.vl_speed_engine = 75;
+                                //stateMc3 = STMC.START_OK;
+                            }
+                            if (mc3.vl_speed_engine < 75)
+                            {
+                                mc3.sig_up = false;
+                                mc3.sig_highspeed = false;
+                                mc3.sig_park = true;
+                                mc3.vl_speed_engine = 75;
+                                stateMc3 = STMC.START_OK;
+                            }
+                            if (mc3.btn_down == true)
+                            {
+                                mc3.sig_up = false;
+                                mc3.sig_highspeed = false;
+                                mc3.sig_park = false;
+                                //mc3.sig_gobehind = true;
+                            }
+                            if (mc3.btn_quickdown == true)
+                            {
+                                coundown_speed_engine3 = mc3.vl_speed_engine - 80;
+                                Params.COUNT_QUICKDOWN = mc3.vl_speed_engine - 80;
+                                stateMc3 = STMC.QUICKDOWN;
+                            }
+                            break;
+                        #endregion
+                        case STMC.PROCESS_MACHINE_UP:
+                            #region PROCESS_MACHINE_UP
+                            mc3.vl_speed_engine = mc3.vl_speed_engine + ((Params.COUNT_STEP_ENGINE - coundown_speed_engine3) / 10);
+                            mc3.sig_up = true;
+                            if (mc3.vl_speed_engine > 100)
+                            {
+                                mc3.sig_up = false;
+                                mc3.sig_highspeed = true;
+                            }
+                            if (coundown_speed_engine3 == 0)
+                            {
+                                stateMc3 = STMC.MACHINEUP;
+                            }
+                            if (mc3.btn_up == true)
+                            {
+                                //mc3.vl_speed_engine = mc3.vl_speed_engine + ((Params.COUNT_STEP_ENGINE - coundown_speed_engine3) / 10);
+                                stateMc3 = STMC.PROCESS_MACHINE_UP;
+                            }
+                            break;
+                        #endregion
+                        case STMC.MACHINEDOWN:
+                            #region MACHINEDOWN
+                            mc3.vl_speed_engine = mc3.vl_speed_engine - ((Params.COUNT_STEP_ENGINE - coundown_speed_engine3) / 10);
+                            //if (mc3.vl_speed_engine < 100)
+                            //{
+                            //    mc3.sig_goahead = true;
+                            //    mc3.sig_highspeed = false;
+                            //    stateMc3 = STMC.MACHINEUP;
+                            //}
+                            if (mc3.vl_speed_engine > 80)
+                            {
+                                mc3.sig_up = true;
+                                mc3.sig_park = false;
+                                mc3.sig_highspeed = false;
+                                stateMc3 = STMC.MACHINEUP;
+                                //stateMc3 = STMC.PROCESS_MACHINE_UP;
+                            }
+                            if (mc3.vl_speed_engine > 100)
+                            {
+                                mc3.sig_up = false;
+                                mc3.sig_highspeed = true;
+                                stateMc3 = STMC.PROCESS_MACHINE_UP;
+                            }
+                            if (mc3.vl_speed_engine < 80)
+                            {
+                                mc3.sig_up = false;
+                                mc3.sig_highspeed = false;
+                                mc3.sig_park = true;
+                                stateMc3 = STMC.MACHINEUP;
+                                //mc3.vl_speed_engine = 80;
+                            }
+                            if (mc3.btn_up == true)     //Đang dùng nút nhấn mc3
+                            {
+                                stateMc3 = STMC.MACHINEUP;
+                            }
+                            if (mc3.btn_down == true)
+                            {
+                                stateMc3 = STMC.MACHINEDOWN;
+                            }
+                            break;
+                        #endregion
+                        case STMC.REVERSE:
+                            #region REVERSE
+                            mc3.vl_speed_engine = mc3.vl_speed_engine + ((Params.COUNT_SPEED_REVERS - coundown_speed_engine3) / 10);
+                            mc3.sig_reverse = true;
+                            mc3.sig_park = false;
+                            if (mc3.vl_speed_engine >= 80)
+                            {
+                                mc3.sig_reverse = true;
+                                stateMc3 = STMC.START_OK;
+                            }
+                            //stateMc3 = STMC.REVERSE;
+                            break;
+                        #endregion
+                        case STMC.STOP_POSITION:
+                            #region STOP_POSITION
+                            mc3.vl_speed_engine = mc3.vl_speed_engine - ((Params.COUNT_SPEED_REVERS - coundown_speed_engine3) / 10);
+                            if (mc3.vl_speed_engine < 75)                    //Đang sai phần cứng. cần sửa lại nút nhấn Up1
+                            {
+                                //coundown_speed_engine3 = Params.COUNT_SPEED_REVERS;           //Giảm để lùi
+                                mc3.sig_park = true;
+                                mc3.sig_highspeed = false;
+                                mc3.sig_up = false;
+                                mc3.sig_reverse = false;
+                                mc3.vl_speed_engine = 75;
+                                stateMc3 = STMC.START_OK;
+                            }
+                            break;
+                        #endregion
+                        case STMC.QUICKDOWN:
+                            #region QUICKDOWN
+                            mc3.vl_speed_engine = mc3.vl_speed_engine - ((Params.COUNT_QUICKDOWN - coundown_speed_engine3) / 10);
+                            if (mc3.vl_speed_engine <= 79)
+                            {
+                                mc3.sig_park = true;
+                                mc3.sig_highspeed = false;
+                                mc3.sig_up = false;
+                                stateMc3 = STMC.START_OK;
                             }
                             break;
                             #endregion
