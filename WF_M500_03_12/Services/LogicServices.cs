@@ -341,9 +341,9 @@ namespace WF_M500_03_12.Services
                             stateMachine = StateMachine.HYDRAULICS_PUMP;
                         }
                         Orionsystem.sig_mainhas_pressure = true;
-                        //mc1.off_all_sig();
-                        //mc2.off_all_sig();
-                        //mc3.off_all_sig();
+                        mc1.off_all_sig();
+                        mc2.off_all_sig();
+                        mc3.off_all_sig();
                         Orionsystem.off_all_sig_main();
                         break;
                     case StateMachine.TEST:
@@ -361,6 +361,10 @@ namespace WF_M500_03_12.Services
                             mc2.on_all_sig();
                             mc3.on_all_sig();
                             Orionsystem.on_all_sig_main();
+                            if (Orionsystem.btn_off_speaker == true)
+                            {
+                                Orionsystem.sig_speaker = false;
+                            }
                         }
                         //Moi them vao
                         if (Orionsystem.btn_checklight == false & Orionsystem.sw_main_VPU == false)
@@ -385,7 +389,7 @@ namespace WF_M500_03_12.Services
             {
                 if (stateMachine == StateMachine.MACHINE_OFF)
                 {
-                    btn_only();
+                    //btn_only();
                     stateMc1 = STMC.IDLE;
                     mc1.offmachine();
                     mc2.offmachine();
@@ -395,7 +399,7 @@ namespace WF_M500_03_12.Services
                 if (stateMachine == StateMachine.STARTMACHINE)
                 {
                     btn_only();
-                    Console.WriteLine(stateMc1);
+                    //Console.WriteLine(stateMc1);
                     switch (stateMc1)
                     {
                         //Auto process
@@ -603,7 +607,7 @@ namespace WF_M500_03_12.Services
                 //--IF_START_OK_GO_TO_CONTROL_SPEED--//
                 {
                     btn_only();
-                    Console.WriteLine(stateMc1);
+                    //Console.WriteLine(stateMc1);
                     switch (stateMc1)
                     {
                         case STMC.START_OK:
@@ -814,8 +818,8 @@ namespace WF_M500_03_12.Services
                 }
                 if (stateMachine == StateMachine.STARTMACHINE)
                 {
-                    btn_only();
-                    Console.WriteLine(stateMc2);
+                    //btn_only();
+                    //Console.WriteLine(stateMc2);
                     switch (stateMc2)
                     {
                         //Auto process
@@ -1023,7 +1027,7 @@ namespace WF_M500_03_12.Services
                 //--IF_START_OK_GO_TO_CONTROL_SPEED--//
                 {
                     btn_only();
-                    Console.WriteLine(stateMc2);
+                    //Console.WriteLine(stateMc2);
                     switch (stateMc2)
                     {
                         case STMC.START_OK:
@@ -1235,7 +1239,7 @@ namespace WF_M500_03_12.Services
                 if (stateMachine == StateMachine.STARTMACHINE)
                 {
                     btn_only();
-                    Console.WriteLine(stateMc3);
+                    //Console.WriteLine(stateMc3);
                     switch (stateMc3)
                     {
                         //Auto process
@@ -1655,72 +1659,75 @@ namespace WF_M500_03_12.Services
                 #endregion
                 //***************************************//
                 #region btn for machine
-                //mc1
-                if (mc1.sw_on_van == true)
+                if (stateMachine != StateMachine.MACHINE_OFF)
                 {
-                    mc1.sig_on_van_out_water = false;
-                    mc1.sig_off_van_out_water = true;
-                }
-                if (mc1.sw_on_van == false)
-                {
-                    mc1.sig_on_van_out_water = true;
-                    mc1.sig_off_van_out_water = false;
-                }
-                //mc2
-                if (mc2.sw_on_van == true)
-                {
-                    mc2.sig_on_van_out_water = false;
-                    mc2.sig_off_van_out_water = true;
-                }
-                if (mc2.sw_on_van == false)
-                {
-                    mc2.sig_on_van_out_water = true;
-                    mc2.sig_off_van_out_water = false;
-                }
-                //mc3
-                if (mc3.sw_on_van == true)
-                {
-                    mc3.sig_on_van_out_water = false;
-                    mc3.sig_off_van_out_water = true;
-                }
-                if (mc3.sw_on_van == false)
-                {
-                    mc3.sig_on_van_out_water = true;
-                    mc3.sig_off_van_out_water = false;
-                }
-                //***************************************//
-                //mc1
-                if (mc1.sw_on_out_air == true)
-                {
-                    mc1.sig_on_van_out_air = false;
-                    mc1.sig_off_van_out_air = true;
-                }
-                if (mc1.sw_on_out_air == false)
-                {
-                    mc1.sig_on_van_out_air = true;
-                    mc1.sig_off_van_out_air = false;
-                }
-                //mc2
-                if (mc2.sw_on_out_air == true)
-                {
-                    mc2.sig_on_van_out_air = false;
-                    mc2.sig_off_van_out_air = true;
-                }
-                if (mc2.sw_on_out_air == false)
-                {
-                    mc2.sig_on_van_out_air = true;
-                    mc2.sig_off_van_out_air = false;
-                }
-                //mc3
-                if (mc3.sw_on_out_air == true)
-                {
-                    mc3.sig_on_van_out_air = false;
-                    mc3.sig_off_van_out_air = true;
-                }
-                if (mc3.sw_on_out_air == false)
-                {
-                    mc3.sig_on_van_out_air = true;
-                    mc3.sig_off_van_out_air = false;
+                    //mc1
+                    if (mc1.sw_on_van == true)
+                    {
+                        mc1.sig_on_van_out_water = false;
+                        mc1.sig_off_van_out_water = true;
+                    }
+                    if (mc1.sw_on_van == false)
+                    {
+                        mc1.sig_on_van_out_water = true;
+                        mc1.sig_off_van_out_water = false;
+                    }
+                    //mc2
+                    if (mc2.sw_on_van == true)
+                    {
+                        mc2.sig_on_van_out_water = false;
+                        mc2.sig_off_van_out_water = true;
+                    }
+                    if (mc2.sw_on_van == false)
+                    {
+                        mc2.sig_on_van_out_water = true;
+                        mc2.sig_off_van_out_water = false;
+                    }
+                    //mc3
+                    if (mc3.sw_on_van == true)
+                    {
+                        mc3.sig_on_van_out_water = false;
+                        mc3.sig_off_van_out_water = true;
+                    }
+                    if (mc3.sw_on_van == false)
+                    {
+                        mc3.sig_on_van_out_water = true;
+                        mc3.sig_off_van_out_water = false;
+                    }
+                    //***************************************//
+                    //mc1
+                    if (mc1.sw_on_out_air == true)
+                    {
+                        mc1.sig_on_van_out_air = false;
+                        mc1.sig_off_van_out_air = true;
+                    }
+                    if (mc1.sw_on_out_air == false)
+                    {
+                        mc1.sig_on_van_out_air = true;
+                        mc1.sig_off_van_out_air = false;
+                    }
+                    //mc2
+                    if (mc2.sw_on_out_air == true)
+                    {
+                        mc2.sig_on_van_out_air = false;
+                        mc2.sig_off_van_out_air = true;
+                    }
+                    if (mc2.sw_on_out_air == false)
+                    {
+                        mc2.sig_on_van_out_air = true;
+                        mc2.sig_off_van_out_air = false;
+                    }
+                    //mc3
+                    if (mc3.sw_on_out_air == true)
+                    {
+                        mc3.sig_on_van_out_air = false;
+                        mc3.sig_off_van_out_air = true;
+                    }
+                    if (mc3.sw_on_out_air == false)
+                    {
+                        mc3.sig_on_van_out_air = true;
+                        mc3.sig_off_van_out_air = false;
+                    }
                 }
                 //***************************************//
                 #endregion
@@ -1752,6 +1759,19 @@ namespace WF_M500_03_12.Services
                 if (Orionsystem.btn_call_vpu == false)
                 {
                     Orionsystem.sig_main_VPU = false;
+                }
+                //Pump right coner
+                if(Orionsystem.sw_start_pump_du == false)
+                {
+                    Orionsystem.sig_green_P_main_pump = true;
+                    Orionsystem.sig_red_main_pump = true;
+                    Orionsystem.sig_main_Du = true;
+                }
+                if (Orionsystem.sw_start_pump_du == true)
+                {
+                    Orionsystem.sig_green_P_main_pump = false;
+                    Orionsystem.sig_red_main_pump = false;
+                    Orionsystem.sig_main_Du = false;
                 }
                 #endregion
             }

@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -86,6 +87,8 @@ namespace WF_M500_03_12
             press_mpa2 = 215;   //Value 0;  max 320
             press_mpa3 = 215;   //Value 0;  max 320 
             press_mpa1 = 215;   //Value 0;  max 320
+
+            PlaySound();
         }
         private void event_update(object sender, EventArgs e)
         {
@@ -386,6 +389,16 @@ namespace WF_M500_03_12
             dispatcherTimer.Tick += new EventHandler(event_update);
             //dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1);
             dispatcherTimer.Start();
+        }
+        public void PlaySound()
+        {
+            Uri uri = new Uri(@"pack://application:,,,/Sounds/jabSound.wav");
+            var player = new MediaPlayer();
+            player.Open(uri);
+            //if(mc1.vl_speed_engine >=75)
+            {
+                player.Play();
+            }
         }
     }
 }

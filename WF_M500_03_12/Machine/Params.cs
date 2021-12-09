@@ -17,8 +17,8 @@ namespace WF_M500_03_12
         public static double COUNT_TEMPERATURE_ENGINE = 50;
         public static double COUNT_STEP_ENGINE = 1;
         public static double COUNT_SPEED_REVERS = 80;
-        public static double COUNT_TEMP_OIL_ENGINE = 100;           //Thông số chưa biết chắc chắn
-        public static double COUNT_TEMP_WATER_ENGINE = 80;          //Chỉnh sau
+        public static double COUNT_TEMP_OIL_ENGINE = 50;           //Thông số chưa biết chắc chắn
+        public static double COUNT_TEMP_WATER_ENGINE = 20;          //Chỉnh sau
         public static double COUNT_QUICKDOWN;
 
         //public static int COUNT_HYDRAULICS_PUMP = 50;

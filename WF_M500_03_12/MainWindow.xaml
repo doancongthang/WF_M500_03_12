@@ -26,7 +26,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <Grid Height="302" Width="302" Grid.Row="0" Grid.Column="0" Margin="27,2,731,1004" >
+        <Grid Height="302" Width="302" Grid.Row="0" Grid.Column="0" Margin="21,9,737,998" >
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-1.png"/>
             </Grid.Background>
@@ -63,7 +63,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Grid.Row="0" Margin="387,2,371,1004">
+        <Grid Height="302" Width="302" Grid.Row="0" Margin="384,6,374,1001">
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-1.png"/>
             </Grid.Background>
@@ -138,12 +138,12 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Grid.Column="0" Margin="27,378,731,625" >
+        <Grid Height="320" Width="320" Grid.Column="0" Margin="21,389,737,618" >
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-2.png"/>
             </Grid.Background>
-            <Border x:Name="second4" CornerRadius="0 15 15 0" Background="Wheat" Margin="151,142,44,148" RenderTransformOrigin="0, 0.5">
+            <Border x:Name="second4" CornerRadius="0 15 15 0" Background="Wheat" Margin="160,152,48,158" RenderTransformOrigin="0, 0.5">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="3" ShadowDepth="1"/>
                 </Border.Effect>
@@ -156,14 +156,14 @@
                     </TransformGroup>
                 </Border.RenderTransform>
             </Border>
-            <Ellipse Fill="Black" Width="37" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="133,129,132,137">
+            <Ellipse Fill="Black" Width="36" Height="36" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,138,0,0">
                 <Ellipse.Effect>
                     <DropShadowEffect BlurRadius="9" ShadowDepth="1"/>
                 </Ellipse.Effect>
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Margin="386,378,372,625">
+        <Grid Height="320" Width="320" Margin="383,386,375,621">
 
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -172,52 +172,52 @@
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-2.png"/>
             </Grid.Background>
-            <Border x:Name="second5" CornerRadius="0 15 15 0" Background="Wheat" Margin="153,141,44,148" RenderTransformOrigin="0, 0.5" Grid.RowSpan="2">
+            <Border x:Name="second5" CornerRadius="0 15 15 0" Background="Wheat" Margin="160,152,48,158" RenderTransformOrigin="0, 0.5" Grid.RowSpan="2">
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="3" ShadowDepth="1"/>
+                    <DropShadowEffect BlurRadius="3" ShadowDepth="-1"/>
                 </Border.Effect>
                 <Border.RenderTransform>
                     <TransformGroup>
-                        <ScaleTransform/>
+                        <ScaleTransform ScaleY="-1"/>
                         <SkewTransform/>
                         <RotateTransform Angle="{Binding tempmc2}"/>
                         <TranslateTransform/>
                     </TransformGroup>
                 </Border.RenderTransform>
             </Border>
-            <Ellipse Fill="Black" Width="37" Height="36" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="132,129,0,0" Grid.RowSpan="2">
+            <Ellipse Fill="Black" Width="38" Height="36" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,137,0,0" Grid.RowSpan="2">
                 <Ellipse.Effect>
                     <DropShadowEffect BlurRadius="9" ShadowDepth="1"/>
                 </Ellipse.Effect>
             </Ellipse>
         </Grid>
 
-        <Grid Height="302" Width="302" Margin="744,378,14,625">
+        <Grid Height="320" Width="320" Margin="744,383,14,624">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-2.png"/>
             </Grid.Background>
-            <Border x:Name="second6" CornerRadius="0 15 15 0" Background="Wheat" Margin="152,140,45,148" RenderTransformOrigin="0, 0.5">
+            <Border x:Name="second6" CornerRadius="0 15 15 0" Background="Wheat" Margin="160,152,48,158" RenderTransformOrigin="0, 0.5">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="3" ShadowDepth="1"/>
                 </Border.Effect>
                 <Border.RenderTransform>
                     <TransformGroup>
-                        <ScaleTransform/>
+                        <ScaleTransform ScaleY="-1"/>
                         <SkewTransform/>
                         <RotateTransform Angle="{Binding tempmc3}"/>
                         <TranslateTransform/>
                     </TransformGroup>
                 </Border.RenderTransform>
             </Border>
-            <Ellipse Fill="Black" Width="35" Height="35" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="133,129,0,138">
+            <Ellipse Fill="Black" Width="36" Height="35" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,138,0,0">
                 <Ellipse.Effect>
                     <DropShadowEffect BlurRadius="9" ShadowDepth="1"/>
                 </Ellipse.Effect>
             </Ellipse>
         </Grid>
 
-        <Grid Height="151" Width="152" Grid.Column="0" Margin="102,833,806,321" >
+        <Grid Height="151" Width="152" Grid.Column="0" Margin="102,844,806,314" >
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-4.png"/>
@@ -242,7 +242,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="151" Width="151" Margin="463,833,446,321">
+        <Grid Height="151" Width="151" Margin="463,841,446,317">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-4.png"/>
@@ -267,7 +267,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="151" Width="151" Margin="825,833,84,321">
+        <Grid Height="151" Width="151" Margin="825,838,84,320">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-4.png"/>
@@ -292,7 +292,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="227" Width="226" Grid.Column="0" Margin="62,1060,772,20" >
+        <Grid Height="227" Width="226" Grid.Column="0" Margin="68,1073,766,9" >
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-3.png"/>
@@ -317,7 +317,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="227" Width="227" Margin="426,1060,406,20">
+        <Grid Height="227" Width="227" Margin="426,1073,406,9">
 
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-3.png"/>
@@ -342,7 +342,7 @@
             </Ellipse>
         </Grid>
 
-        <Grid Height="227" Width="227" Margin="788,1060,45,20">
+        <Grid Height="227" Width="227" Margin="788,1070,45,12">
             <Grid.Background>
                 <ImageBrush ImageSource="/Img/gauge-3.png"/>
             </Grid.Background>

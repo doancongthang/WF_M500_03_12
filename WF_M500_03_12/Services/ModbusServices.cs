@@ -252,8 +252,8 @@ namespace WF_M500_03_12.Services
                                 bool[] result3 = modbusClient.ReadDiscreteInputs(0, 32);
                                 mc1.btn_on_VVD = result3[1];
                                 mc3.btn_off_MOA = result3[3];
-                                mc3.btn_off_MPA = result3[5];
-                                mc3.btn_on_VVD = result3[7];
+                                mc3.btn_off_MPA = result3[7];
+                                mc3.btn_on_VVD = result3[5];
                                 mc2.btn_estop = result3[11];
                                 mc2.btn_up = result3[13];
 
