@@ -22,7 +22,7 @@ namespace WF_M500_03_12.Services
             mc2 = _mc2;
             mc3 = _mc3;
             modbusClient = new WF_M500_03_12.ModbusClient();
-            modbusClient.SerialPort = "COM8";
+            modbusClient.SerialPort = "COM1";
             modbusClient.Baudrate = 115200;
             modbusClient.Parity = System.IO.Ports.Parity.None;
             modbusClient.StopBits = System.IO.Ports.StopBits.One;

@@ -88,7 +88,9 @@ namespace WF_M500_03_12
             press_mpa3 = 215;   //Value 0;  max 320 
             press_mpa1 = 215;   //Value 0;  max 320
 
-            PlaySound();
+            temp_oil_water_1 = 215;   //Value 0;  max 320
+            temp_oil_water_2 = 215;   //Value 0;  max 320 
+            temp_oil_water_3 = 215;   //Value 0;  max 320
         }
         private void event_update(object sender, EventArgs e)
         {
@@ -389,16 +391,6 @@ namespace WF_M500_03_12
             dispatcherTimer.Tick += new EventHandler(event_update);
             //dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1);
             dispatcherTimer.Start();
-        }
-        public void PlaySound()
-        {
-            Uri uri = new Uri(@"pack://application:,,,/Sounds/jabSound.wav");
-            var player = new MediaPlayer();
-            player.Open(uri);
-            //if(mc1.vl_speed_engine >=75)
-            {
-                player.Play();
-            }
         }
     }
 }

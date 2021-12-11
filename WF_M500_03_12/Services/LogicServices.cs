@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Windows.Media;
+using System.Media;
 using System.Threading.Tasks;
 using WF_M500_03_12;
 
@@ -17,8 +19,7 @@ namespace WF_M500_03_12.Services
         READY_HYDRAULICS_PUPM,
         W_OFFTEST,
         TEST,
-        STARTMACHINE,
-        CONTROLSPEED,
+        STARTMACHINE    
     }
     enum STMC
     {
@@ -27,13 +28,13 @@ namespace WF_M500_03_12.Services
         PROCESS_AUTO_START,
         PRESSURE_PREMINARY_PUMP,
         READY_HIGH_PRESURE,
-        START_OK,
 
         PROCESS_MANUAL,
         PROCESS_MANUAL_START,
         MANUAL_PRESSURE_PREMINARY_PUMP,
         MANUAL_READY_HIGH_PRESURE,
 
+        START_OK,
         MACHINEUP,
         PROCESS_MACHINE_UP,
         MACHINEHIGHSPEED,
@@ -46,7 +47,9 @@ namespace WF_M500_03_12.Services
     {
         #region Declair
         StateMachine stateMachine;
+        public StateMachine preState;
         STMC stateMc1, stateMc2, stateMc3;
+        
         public Machine mc1;
         public Machine mc2;
         public Machine mc3;
@@ -74,6 +77,9 @@ namespace WF_M500_03_12.Services
         public double coundown_temp_engine3 = 0;
         public double coundown_temp_oil3 = 0;
         public double coundown_temp_water3 = 0;
+
+        public bool sound_ok;
+
         #endregion
         public LogicServices(Machine _mc1, Machine _mc2, Machine _mc3)
         {
@@ -81,10 +87,14 @@ namespace WF_M500_03_12.Services
             mc2 = _mc2;
             mc3 = _mc3;
             stateMachine = StateMachine.MACHINE_OFF;
+            preState = StateMachine.MACHINE_OFF;
+            // stateMachine = StateMachine.READY_HYDRAULICS_PUPM;
             stateMc1 = STMC.IDLE;
             stateMc2 = STMC.IDLE;
             stateMc3 = STMC.IDLE;
 
+            sound_ok = false;
+            
             Thread delay1Thread = new Thread(Timer1Second);
             //Thread delay2Thread = new Thread(Timer2Second);
             //Thread delay3Thread = new Thread(Timer3Second);
@@ -142,6 +152,7 @@ namespace WF_M500_03_12.Services
                     coundown_temp_oil3--;
                 if (coundown_temp_water3 > 0)
                     coundown_temp_water3--;
+
                 Thread.Sleep(100);
             }
         }
@@ -188,6 +199,7 @@ namespace WF_M500_03_12.Services
             Task stateEachMachine1 = Task.Run(() => parallel1_updateMachine());
             Task stateEachMachine2 = Task.Run(() => parallel2_updateMachine());
             Task stateEachMachine3 = Task.Run(() => parallel3_updateMachine());
+            Task updateAudio = Task.Run(() => loopaudio());
         }
         private async void loopUpdateActionsStateMachine()
         {
@@ -240,14 +252,17 @@ namespace WF_M500_03_12.Services
                         break;
                     case StateMachine.MACHINE_ON:
                         btn_only();
+                        if (Orionsystem.btn_checklight == true)
+                        {
+                            preState = StateMachine.MACHINE_ON;
+                            stateMachine = StateMachine.TEST;
+                        }
                         if (Orionsystem.sw_main_CPU == true & Orionsystem.sw_main_VPU == false)
                         {
                             if (Orionsystem.sw_control_cpu_on == false)
                             {
                                 stateMachine = StateMachine.MACHINE_OFF;
-                            }
-                            if (Orionsystem.btn_checklight == true)
-                                stateMachine = StateMachine.TEST;
+                            }   
                             countdown_hydraulics_pump = Params.COUNT_HYDRAULICS_PUMP;
                             stateMachine = StateMachine.HYDRAULICS_PUMP;
                             //stateMachine = StateMachine.HYDRAULICS_PUMP;
@@ -267,14 +282,16 @@ namespace WF_M500_03_12.Services
                         break;
                     case StateMachine.HYDRAULICS_PUMP:
                         btn_only();
-                        if (Orionsystem.sw_main_CPU == true & Orionsystem.sw_main_VPU == false)
+                        if (Orionsystem.btn_checklight == true)
                         {
-
-                            if (Orionsystem.btn_checklight == true & stateMachine == StateMachine.MACHINE_ON)
-                                stateMachine = StateMachine.TEST;
-                            if (Orionsystem.btn_checklight == true & Orionsystem.sw_main_CPU == true)
+                            stateMachine = StateMachine.TEST;
+                            preState = StateMachine.HYDRAULICS_PUMP;
+                        }
+                        if (Orionsystem.sw_main_CPU == true && Orionsystem.sw_main_VPU == false)
+                        {
+                            if (Orionsystem.btn_checklight == true && Orionsystem.sw_main_CPU == true)
                             {
-                                stateMachine = StateMachine.TEST;
+                                
                             }
                             if (Orionsystem.sw_main_CPU == false)
                             {
@@ -296,14 +313,18 @@ namespace WF_M500_03_12.Services
                         break;
                     case StateMachine.READY_HYDRAULICS_PUPM:
                         btn_only();
+                        if (Orionsystem.btn_checklight == true)
+                        {
+                            stateMachine = StateMachine.TEST;
+                            preState = StateMachine.READY_HYDRAULICS_PUPM;
+                        }
                         if (Orionsystem.sw_main_CPU == true & Orionsystem.sw_main_VPU == false)
                         {
                             if (Orionsystem.sw_main_CPU == false)
                             {
                                 stateMachine = StateMachine.MACHINE_OFF;
                             }
-                            if (Orionsystem.btn_checklight == true)
-                                stateMachine = StateMachine.TEST;
+                                
                             Orionsystem.sig_mainhas_pressure = true;
                             Orionsystem.sig_mainno_pressure = false;
                             mc1.sig_oil_no_pump = false;
@@ -327,6 +348,7 @@ namespace WF_M500_03_12.Services
                         if (Orionsystem.btn_checklight == true & Orionsystem.sw_main_CPU == true)
                         {
                             stateMachine = StateMachine.TEST;
+                            preState = StateMachine.W_OFFTEST;
                         }
                         if (Orionsystem.sw_main_CPU == false)
                         {
@@ -346,15 +368,22 @@ namespace WF_M500_03_12.Services
                         mc3.off_all_sig();
                         Orionsystem.off_all_sig_main();
                         break;
+                    case StateMachine.STARTMACHINE:
+                        if (Orionsystem.btn_checklight == true)
+                        {
+                            stateMachine = StateMachine.TEST;
+                            preState = StateMachine.STARTMACHINE;
+                        }
+                        break;
                     case StateMachine.TEST:
-                        if (Orionsystem.btn_checklight == false & Orionsystem.sw_main_CPU == true)
-                        {
-                            stateMachine = StateMachine.MACHINE_OFF;
-                        }
-                        if (Orionsystem.btn_checklight == false)
-                        {
-                            stateMachine = StateMachine.W_OFFTEST;
-                        }
+                        //if (Orionsystem.btn_checklight == false && Orionsystem.sw_main_CPU == true)
+                        //{
+                        //    stateMachine = StateMachine.MACHINE_OFF;
+                        //}
+                        //if (Orionsystem.btn_checklight == false)
+                        //{
+                        //    stateMachine = StateMachine.W_OFFTEST;
+                        //}
                         while (Orionsystem.btn_checklight == true)
                         {
                             mc1.on_all_sig();
@@ -367,16 +396,20 @@ namespace WF_M500_03_12.Services
                             }
                         }
                         //Moi them vao
-                        if (Orionsystem.btn_checklight == false & Orionsystem.sw_main_VPU == false)
+                        if (Orionsystem.btn_checklight == false)
                         {
-                            if (stateMachine == StateMachine.MACHINE_ON)
-                                stateMachine = StateMachine.MACHINE_ON;
-                            if (stateMachine == StateMachine.MACHINE_OFF)
-                                stateMachine = StateMachine.MACHINE_OFF;
-                            if (stateMachine == StateMachine.HYDRAULICS_PUMP)
-                                stateMachine = StateMachine.HYDRAULICS_PUMP;
-                            if (stateMachine == StateMachine.READY_HYDRAULICS_PUPM)
-                                stateMachine = StateMachine.READY_HYDRAULICS_PUPM;
+                            mc1.off_all_sig();
+                            mc2.off_all_sig();
+                            mc3.off_all_sig();
+                            Orionsystem.off_all_sig_main();
+                            Orionsystem.sig_speaker = false;
+                            mc1.sig_oil_no_pump = true;
+                            mc2.sig_oil_no_pump = true;
+                            mc3.sig_oil_no_pump = true;
+                            mc1.sig_park = true;
+                            mc2.sig_park = true;
+                            mc3.sig_park = true;
+                            stateMachine = preState;
                         }
                         break;
                 }
@@ -472,6 +505,7 @@ namespace WF_M500_03_12.Services
                             mc1.vl_speed_engine = ((Params.COUNT_SPEED_ENGINE - coundown_speed_engine));
                             mc1.vl_temperature_water = ((Params.COUNT_TEMP_WATER_ENGINE - coundown_temp_water));
                             mc1.vl_temperature_oil = ((Params.COUNT_TEMP_OIL_ENGINE - coundown_temp_oil));
+
                             if (coundown_preminary_pump == 0)
                             {
                                 mc1.sig_vnd = false;
@@ -481,6 +515,7 @@ namespace WF_M500_03_12.Services
                             }
                             if (coundown_speed_engine == 0)
                             {
+                                //Playsound3();
                                 stateMc1 = STMC.START_OK;
                             }
                             break;
@@ -577,6 +612,7 @@ namespace WF_M500_03_12.Services
                             mc1.sig_rotate1 = false;
                             mc1.sig_rotate2 = false;
                             mc1.sig_rotate3 = false;
+
                             if (coundown_preminary_pump == 0)
                             {
                                 mc1.sig_vnd = false;
@@ -586,6 +622,7 @@ namespace WF_M500_03_12.Services
                             }
                             if (coundown_speed_engine == 0)
                             {
+                                //Playsound3();
                                 stateMc1 = STMC.START_OK;
                             }
                             break;
@@ -901,6 +938,7 @@ namespace WF_M500_03_12.Services
                             }
                             if (coundown_speed_engine2 == 0)
                             {
+                                //Playsound3();
                                 stateMc2 = STMC.START_OK;
                             }
                             break;
@@ -1006,6 +1044,7 @@ namespace WF_M500_03_12.Services
                             }
                             if (coundown_speed_engine2 == 0)
                             {
+                                //Playsound3();
                                 stateMc2 = STMC.START_OK;
                             }
                             break;
@@ -1321,6 +1360,7 @@ namespace WF_M500_03_12.Services
                             }
                             if (coundown_speed_engine3 == 0)
                             {
+                                //Playsound3();
                                 stateMc3 = STMC.START_OK;
                             }
                             break;
@@ -1426,8 +1466,10 @@ namespace WF_M500_03_12.Services
                             }
                             if (coundown_speed_engine3 == 0)
                             {
+                                //Playsound3();
                                 stateMc3 = STMC.START_OK;
                             }
+
                             break;
                         #endregion
                         case STMC.START_OK:
@@ -1643,6 +1685,45 @@ namespace WF_M500_03_12.Services
                 await Task.Delay(1);
             }
         }
+        private async void loopaudio()
+        {
+            Uri uri = new Uri(@"C:\Sounds\3.mp3");
+            MediaPlayer player = new MediaPlayer();
+            while (true)
+            {
+                if ((stateMc1 == STMC.PRESSURE_PREMINARY_PUMP) 
+                    || (stateMc2 == STMC.PRESSURE_PREMINARY_PUMP) 
+                    || (stateMc3 == STMC.PRESSURE_PREMINARY_PUMP)
+                    || (stateMc1 == STMC.MANUAL_PRESSURE_PREMINARY_PUMP)
+                    || (stateMc2 == STMC.MANUAL_PRESSURE_PREMINARY_PUMP)
+                    || (stateMc3 == STMC.MANUAL_PRESSURE_PREMINARY_PUMP))
+                {
+                    if (sound_ok == false)
+                    {
+                        sound_ok = true;
+                        
+                        player.Open(uri);
+                        player.Play();
+                    }
+                }
+                if ((stateMc1 == STMC.PROCESS_MANUAL) && (stateMc2 == STMC.PROCESS_MANUAL) && (stateMc3 == STMC.PROCESS_MANUAL))
+                {
+                    if (sound_ok == true)
+                    {
+                        sound_ok = false;
+                        player.Stop();
+                    }
+                }
+                if (stateMachine == StateMachine.MACHINE_OFF)
+                {
+                    if (sound_ok == true)
+                    {
+                        sound_ok = false;
+                        player.Stop();
+                    }
+                }
+            }    
+        }
         public void btn_only()
         {
             //***********Tương tác độc lập SW
@@ -1728,6 +1809,12 @@ namespace WF_M500_03_12.Services
                         mc3.sig_on_van_out_air = true;
                         mc3.sig_off_van_out_air = false;
                     }
+
+                    //Thêm vào cho sinh động
+                    mc1.sig_wn_high_P_water = true;
+                    mc2.sig_wn_high_P_water = true;
+                    mc3.sig_wn_high_P_water = true;
+
                 }
                 //***************************************//
                 #endregion
